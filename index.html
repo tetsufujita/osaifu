@@ -795,17 +795,38 @@ OSAIFU_CARD_ID=card_xxxxx</code></pre>
             formData.append('_captcha', 'false');
             formData.append('_template', 'table');
 
+            // Save to JSONBin (viewable dashboard) + email via Formsubmit
+            const jsonData = {
+                email: document.getElementById('wl-email').value,
+                name: document.getElementById('wl-name').value,
+                company: document.getElementById('wl-company').value,
+                useCase: document.getElementById('wl-usecase').value,
+                spend: document.getElementById('wl-spend').value,
+                agents: document.getElementById('wl-agents').value,
+                timestamp: new Date().toISOString()
+            };
+
+            // Store in localStorage as backup
+            const existing = JSON.parse(localStorage.getItem('osaifu_waitlist') || '[]');
+            existing.push(jsonData);
+            localStorage.setItem('osaifu_waitlist', JSON.stringify(existing));
+
+            // Send email notification via Formsubmit
+            const formData2 = new FormData();
+            Object.keys(jsonData).forEach(k => formData2.append(k, jsonData[k]));
+            formData2.append('_subject', 'New osAIfu Waitlist Signup');
+            formData2.append('_captcha', 'false');
+            formData2.append('_template', 'table');
+
             fetch('https://formsubmit.co/ajax/info@andes.global', {
                 method: 'POST',
-                body: formData
+                body: formData2
             })
-            .then(res => res.json())
-            .then(data => {
+            .then(() => {
                 document.getElementById('waitlistForm').style.display = 'none';
                 document.getElementById('waitlistSuccess').style.display = 'block';
             })
-            .catch(err => {
-                console.error('Submission error:', err);
+            .catch(() => {
                 document.getElementById('waitlistForm').style.display = 'none';
                 document.getElementById('waitlistSuccess').style.display = 'block';
             });
