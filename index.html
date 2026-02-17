@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="ja" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>osAIfu - AI Agent Wallet</title>
+    <title>osAIfu - AIエージェントに、お財布を。</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .gradient-bg { background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%); }
+        .gradient-bg { background: #0a0a0f; }
         .glass { 
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(20px);
@@ -18,26 +18,36 @@
             background: linear-gradient(135deg, #635BFF 0%, #9C7EFF 100%);
             animation: float 6s ease-in-out infinite;
             transform: perspective(1000px) rotateX(10deg) rotateY(-5deg);
+            box-shadow: 0 25px 50px -12px rgba(99, 91, 255, 0.25);
         }
         @keyframes float {
             0%, 100% { transform: perspective(1000px) rotateX(10deg) rotateY(-5deg) translateY(0px); }
             50% { transform: perspective(1000px) rotateX(10deg) rotateY(-5deg) translateY(-20px); }
         }
-        .card-number-dots {
-            background: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.8) 1px, transparent 2px);
-            background-size: 12px 12px;
+        .card-chip {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border-radius: 4px;
+        }
+        .openclaw-section {
+            background: linear-gradient(135deg, rgba(99, 91, 255, 0.1) 0%, rgba(156, 126, 255, 0.05) 100%);
+            border: 1px solid rgba(99, 91, 255, 0.2);
+        }
+        .dashboard-mockup {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid rgba(99, 91, 255, 0.3);
+        }
+        .transaction-item {
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 3px solid #635BFF;
+        }
+        .step-number {
+            background: linear-gradient(135deg, #635BFF 0%, #9C7EFF 100%);
         }
         .lang-hidden { display: none; }
-        pre { background: #0d1117; border-radius: 8px; border: 1px solid #30363d; }
-        .conversation-bubble { 
-            background: rgba(99, 91, 255, 0.1); 
-            border: 1px solid rgba(99, 91, 255, 0.3);
-            border-radius: 12px;
-        }
-        .response-bubble {
-            background: rgba(34, 197, 94, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            border-radius: 12px;
+        pre { 
+            background: #0d1117; 
+            border-radius: 8px; 
+            border: 1px solid #635BFF;
         }
     </style>
     <script>
@@ -56,381 +66,597 @@
 <body class="gradient-bg text-white min-h-full">
     <!-- Navigation -->
     <nav class="container mx-auto px-6 py-6 flex items-center justify-between">
-        <div class="flex items-center space-x-2">
-            <span class="text-2xl">👛</span>
-            <span class="text-xl font-bold">osAIfu</span>
-        </div>
-        <div class="hidden md:flex items-center space-x-8">
-            <a href="#features" class="text-gray-300 hover:text-white transition-colors" data-en="Features" data-jp="機能">Features</a>
-            <a href="#pricing" class="text-gray-300 hover:text-white transition-colors" data-en="Pricing" data-jp="料金">Pricing</a>
-            <a href="#docs" class="text-gray-300 hover:text-white transition-colors" data-en="Docs" data-jp="ドキュメント">Docs</a>
+        <div class="flex items-center space-x-3">
+            <span class="text-3xl">👛</span>
+            <span class="text-2xl font-bold">osAIfu</span>
         </div>
         <div class="flex items-center space-x-4">
-            <button onclick="toggleLanguage()" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+            <button onclick="toggleLanguage()" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-white/10">
                 <span>🌐</span>
-                <span id="lang-indicator">EN</span>
+                <span id="lang-indicator">JP</span>
             </button>
-            <button class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors font-medium" data-en="Join Waitlist" data-jp="ウェイトリストに参加">Join Waitlist</button>
+            <a href="dashboard.html" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors font-medium" 
+               data-jp="無料で始める" data-en="Start Free">無料で始める</a>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="container mx-auto px-6 py-20 text-center relative">
-        <div class="max-w-4xl mx-auto">
-            <h1 class="text-5xl md:text-7xl font-bold mb-8 leading-tight">
-                <span data-en="Give your AI agents a wallet, not your credit card." data-jp="AIエージェントに、クレジットカードではなく専用ウォレットを。">Give your AI agents a wallet, not your credit card.</span>
-            </h1>
-            <p class="text-xl md:text-2xl text-gray-300 mb-12 leading-relaxed" data-en="Secure prepaid virtual cards for AI agents. Set limits, monitor spending, and maintain control while your agents handle autonomous payments." data-jp="AIエージェント向けのセキュアなプリペイド仮想カード。制限を設定し、支出を監視し、エージェントが自律的に支払いを処理している間も制御を維持できます。">
-                Secure prepaid virtual cards for AI agents. Set limits, monitor spending, and maintain control while your agents handle autonomous payments.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-                <button class="bg-primary text-white px-8 py-4 rounded-lg hover:bg-blue-600 transition-colors font-semibold text-lg" data-en="Get Early Access" data-jp="早期アクセスを取得">Get Early Access</button>
-                <button class="glass text-white px-8 py-4 rounded-lg hover:bg-white/10 transition-colors font-medium text-lg" data-en="View Documentation" data-jp="ドキュメントを表示">View Documentation</button>
-            </div>
-        </div>
-        
-        <!-- Floating Virtual Card -->
-        <div class="flex justify-center mb-12">
-            <div class="floating-card w-96 h-56 rounded-2xl relative overflow-hidden shadow-2xl">
-                <div class="absolute inset-0 p-6 flex flex-col justify-between">
-                    <div class="flex justify-between items-start">
-                        <div class="text-white">
-                            <div class="text-sm opacity-80" data-en="Virtual Card" data-jp="バーチャルカード">Virtual Card</div>
-                            <div class="font-semibold">osAIfu Agent</div>
-                        </div>
-                        <div class="text-white text-2xl font-bold">VISA</div>
-                    </div>
-                    <div class="card-number-dots h-4 w-48 opacity-60"></div>
-                    <div class="flex justify-between items-end text-white">
-                        <div>
-                            <div class="text-xs opacity-80" data-en="Agent ID" data-jp="エージェントID">Agent ID</div>
-                            <div class="font-mono text-sm">AD-OPT-001</div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-xs opacity-80" data-en="Limit" data-jp="制限">Limit</div>
-                            <div class="font-semibold">$2,500</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Trusted By Section -->
-    <section class="container mx-auto px-6 py-12">
-        <div class="text-center mb-8">
-            <p class="text-gray-400 text-lg" data-en="Trusted by teams using" data-jp="以下を使用するチームに信頼されています">Trusted by teams using</p>
-        </div>
-        <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12 text-gray-500">
-            <div class="text-xl font-semibold hover:text-primary transition-colors cursor-pointer">OpenClaw</div>
-            <div class="text-xl font-semibold hover:text-white transition-colors">LangChain</div>
-            <div class="text-xl font-semibold hover:text-white transition-colors">AutoGPT</div>
-            <div class="text-xl font-semibold hover:text-white transition-colors">CrewAI</div>
-        </div>
-    </section>
-
-    <!-- Problem Section -->
-    <section class="container mx-auto px-6 py-20">
-        <div class="text-center mb-16">
-            <h2 class="text-4xl font-bold mb-6" data-en="The Problem with Current Solutions" data-jp="現在のソリューションの問題点">The Problem with Current Solutions</h2>
-        </div>
-        <div class="grid md:grid-cols-3 gap-8">
-            <div class="glass p-8 rounded-2xl">
-                <div class="text-red-400 text-4xl mb-4">⚠️</div>
-                <h3 class="text-xl font-semibold mb-4" data-en="Personal Card Risk" data-jp="個人カードのリスク">Personal Card Risk</h3>
-                <p class="text-gray-300" data-en="Sharing your personal credit card with AI agents exposes your finances to unlimited spending and security breaches." data-jp="AIエージェントと個人のクレジットカードを共有することは、無制限の支出やセキュリティ侵害にあなたの財務を晒すことになります。">Sharing your personal credit card with AI agents exposes your finances to unlimited spending and security breaches.</p>
-            </div>
-            <div class="glass p-8 rounded-2xl">
-                <div class="text-orange-400 text-4xl mb-4">🏢</div>
-                <h3 class="text-xl font-semibold mb-4" data-en="Corporate Cards Aren't for Bots" data-jp="法人カードはボット用ではない">Corporate Cards Aren't for Bots</h3>
-                <p class="text-gray-300" data-en="Corporate credit cards require human approval workflows and aren't designed for autonomous agent transactions." data-jp="法人クレジットカードには人間による承認ワークフローが必要で、自律エージェントの取引のために設計されていません。">Corporate credit cards require human approval workflows and aren't designed for autonomous agent transactions.</p>
-            </div>
-            <div class="glass p-8 rounded-2xl">
-                <div class="text-yellow-400 text-4xl mb-4">📱</div>
-                <h3 class="text-xl font-semibold mb-4" data-en="API-Only Coverage" data-jp="API限定の対応範囲">API-Only Coverage</h3>
-                <p class="text-gray-300" data-en="Most payment solutions only work with specific APIs, limiting where your agents can spend money autonomously." data-jp="ほとんどの決済ソリューションは特定のAPIでのみ動作し、エージェントが自律的にお金を使える場所が制限されます。">Most payment solutions only work with specific APIs, limiting where your agents can spend money autonomously.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- OpenClaw Integration Section -->
-    <section class="container mx-auto px-6 py-20">
-        <div class="glass p-12 rounded-3xl">
-            <div class="text-center mb-12">
-                <div class="inline-flex items-center space-x-4 mb-6">
-                    <span class="text-3xl">🤝</span>
-                    <span class="text-primary text-xl font-semibold">Flagship Partnership</span>
-                </div>
-                <h2 class="text-4xl font-bold mb-6" data-en="Built for OpenClaw" data-jp="OpenClaw向けに構築">Built for OpenClaw</h2>
-                <p class="text-xl text-gray-300 max-w-3xl mx-auto" data-en="osAIfu integrates seamlessly with OpenClaw's AI agent platform, enabling your agents to make autonomous payments with complete security and control." data-jp="osAIfuはOpenClaw's AIエージェントプラットフォームとシームレスに統合され、完全なセキュリティと制御でエージェントが自律的な支払いを可能にします。">
-                    osAIfu integrates seamlessly with OpenClaw's AI agent platform, enabling your agents to make autonomous payments with complete security and control.
+    <section class="container mx-auto px-6 py-16 lg:py-24">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <!-- Left: Content -->
+            <div>
+                <h1 class="text-5xl lg:text-7xl font-bold mb-8 leading-tight">
+                    <span data-jp="AIエージェントに、お財布を。" data-en="Give your AI agent a wallet.">AIエージェントに、お財布を。</span>
+                </h1>
+                <p class="text-xl lg:text-2xl text-gray-300 mb-12 leading-relaxed">
+                    <span data-jp="カードを発行して、APIキーを渡すだけ。あとはAIが自律的に買い物・契約・決済。すべてあなたの管理下で。" 
+                          data-en="Issue a card, pass the API key. Then AI handles autonomous shopping, contracts, and payments. All under your control.">
+                        カードを発行して、APIキーを渡すだけ。あとはAIが自律的に買い物・契約・決済。すべてあなたの管理下で。
+                    </span>
                 </p>
+                <div class="flex flex-col sm:flex-row gap-4 mb-16">
+                    <button class="bg-primary text-white px-8 py-4 rounded-lg hover:bg-blue-600 transition-colors font-semibold text-lg shadow-lg">
+                        <span data-jp="無料で始める" data-en="Start Free">無料で始める</span>
+                    </button>
+                    <a href="https://openclaw.ai" target="_blank" class="glass text-white px-8 py-4 rounded-lg hover:bg-white/10 transition-colors font-medium text-lg flex items-center space-x-2">
+                        <span data-jp="OpenClawについて" data-en="About OpenClaw">OpenClawについて</span>
+                        <span>🐾</span>
+                    </a>
+                </div>
             </div>
             
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <!-- Right: 3D Floating Card -->
+            <div class="flex justify-center lg:justify-end">
+                <div class="floating-card w-80 lg:w-96 h-56 lg:h-64 rounded-2xl relative overflow-hidden">
+                    <div class="absolute inset-0 p-6 lg:p-8 flex flex-col justify-between">
+                        <div class="flex justify-between items-start">
+                            <div class="text-white">
+                                <div class="text-sm opacity-80 mb-2">osAIfu</div>
+                                <div class="font-bold text-lg">Agent Card</div>
+                            </div>
+                            <div class="text-white text-2xl font-bold">VISA</div>
+                        </div>
+                        
+                        <div class="card-chip w-12 h-8 mb-4"></div>
+                        
+                        <div class="flex justify-between items-end text-white">
+                            <div>
+                                <div class="text-xs opacity-80 mb-1">
+                                    <span data-jp="エージェント名" data-en="Agent Name">エージェント名</span>
+                                </div>
+                                <div class="font-mono text-sm">OpenClaw-Agent</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs opacity-80 mb-1">
+                                    <span data-jp="月額上限" data-en="Monthly Limit">月額上限</span>
+                                </div>
+                                <div class="font-bold text-lg">¥250,000</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works (3 Steps) -->
+    <section class="container mx-auto px-6 py-20">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl lg:text-5xl font-bold mb-6">
+                <span data-jp="3つのステップで開始" data-en="Get Started in 3 Steps">3つのステップで開始</span>
+            </h2>
+        </div>
+        
+        <div class="grid lg:grid-cols-3 gap-12">
+            <!-- Step 1 -->
+            <div class="text-center">
+                <div class="step-number w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8">
+                    <span class="text-3xl font-bold text-white">1</span>
+                </div>
+                <h3 class="text-2xl font-bold mb-6">
+                    <span data-jp="カードを発行" data-en="Issue Card">カードを発行</span>
+                </h3>
+                <div class="glass p-6 rounded-xl mb-6">
+                    <p class="text-gray-300">
+                        <span data-jp="ダッシュボードでバーチャルVisaカードを作成。月額上限・利用カテゴリを設定。" 
+                              data-en="Create virtual Visa card in dashboard. Set monthly limits and usage categories.">
+                            ダッシュボードでバーチャルVisaカードを作成。月額上限・利用カテゴリを設定。
+                        </span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="text-center">
+                <div class="step-number w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8">
+                    <span class="text-3xl font-bold text-white">2</span>
+                </div>
+                <h3 class="text-2xl font-bold mb-6">
+                    <span data-jp="エージェントに渡す" data-en="Pass to Agent">エージェントに渡す</span>
+                </h3>
+                <div class="glass p-6 rounded-xl">
+                    <p class="text-gray-300 mb-4">
+                        <span data-jp="APIキーとカードIDをOpenClawに設定するだけ" 
+                              data-en="Simply configure API key and card ID in OpenClaw">
+                            APIキーとカードIDをOpenClawに設定するだけ
+                        </span>
+                    </p>
+                    <pre class="text-left text-sm p-4 text-green-400"><code>OSAIFU_API_KEY=sk_live_xxxxx
+OSAIFU_CARD_ID=card_xxxxx</code></pre>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="text-center">
+                <div class="step-number w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8">
+                    <span class="text-3xl font-bold text-white">3</span>
+                </div>
+                <h3 class="text-2xl font-bold mb-6">
+                    <span data-jp="あとはAIにおまかせ" data-en="Let AI Handle It">あとはAIにおまかせ</span>
+                </h3>
+                <div class="glass p-6 rounded-xl">
+                    <p class="text-gray-300">
+                        <span data-jp="OpenClawが自律的に決済。すべての取引はダッシュボードでリアルタイム監視。" 
+                              data-en="OpenClaw handles autonomous payments. Monitor all transactions in real-time dashboard.">
+                            OpenClawが自律的に決済。すべての取引はダッシュボードでリアルタイム監視。
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- OpenClaw Integration Section (Highlight) -->
+    <section class="container mx-auto px-6 py-20">
+        <div class="openclaw-section p-12 lg:p-16 rounded-3xl">
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center space-x-3 mb-6">
+                    <span class="text-5xl">🐾</span>
+                    <span class="text-primary text-2xl font-bold">Powered by OpenClaw</span>
+                </div>
+                <h2 class="text-4xl lg:text-6xl font-bold mb-8">
+                    <span data-jp="OpenClaw連携で<br>AI決済が自由自在" data-en="Seamless AI Payments<br>with OpenClaw Integration">OpenClaw連携で<br>AI決済が自由自在</span>
+                </h2>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-12 items-center mb-12">
                 <div>
-                    <h3 class="text-2xl font-bold mb-6" data-en="Simple Configuration" data-jp="簡単な設定">Simple Configuration</h3>
-                    <pre class="text-sm p-6 text-green-400 rounded-lg overflow-x-auto"><code># openclaw.yaml
-plugins:
-  osaifu:
-    agent: ad-optimizer
-    monthly_limit: $2,500
-    categories: [advertising]
-    alerts: slack</code></pre>
-                </div>
-                
-                <div class="space-y-6">
-                    <h3 class="text-2xl font-bold mb-6" data-en="Agent Conversation Example" data-jp="エージェント会話例">Agent Conversation Example</h3>
-                    
-                    <div class="conversation-bubble p-4">
-                        <div class="flex items-center space-x-2 mb-2">
-                            <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-sm font-bold">🤖</div>
-                            <span class="font-medium">OpenClaw Agent</span>
+                    <p class="text-xl text-gray-300 mb-8">
+                        <span data-jp="OpenClawは、AIエージェントに自律的な行動力を与えるプラットフォーム。osAIfuと連携することで、あなたのAIエージェントは：" 
+                              data-en="OpenClaw gives AI agents autonomous action capabilities. With osAIfu integration, your AI agents can:">
+                            OpenClawは、AIエージェントに自律的な行動力を与えるプラットフォーム。osAIfuと連携することで、あなたのAIエージェントは：
+                        </span>
+                    </p>
+
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-green-400 text-2xl">✅</span>
+                            <span class="text-lg">
+                                <span data-jp="Google Ads / Meta Adsの広告運用を自動化" 
+                                      data-en="Automate Google Ads / Meta Ads campaigns">
+                                    Google Ads / Meta Adsの広告運用を自動化
+                                </span>
+                            </span>
                         </div>
-                        <p data-en="I need to pay for Google Ads campaign optimization. Requesting $450 for ad spend." data-jp="Google Ads キャンペーンの最適化のために支払いが必要です。広告費として$450をリクエストします。">"I need to pay for Google Ads campaign optimization. Requesting $450 for ad spend."</p>
-                    </div>
-                    
-                    <div class="response-bubble p-4">
-                        <div class="flex items-center space-x-2 mb-2">
-                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-sm">👛</div>
-                            <span class="font-medium">osAIfu</span>
+                        <div class="flex items-center space-x-4">
+                            <span class="text-green-400 text-2xl">✅</span>
+                            <span class="text-lg">
+                                <span data-jp="SaaS（Notion, Slack, AWS等）のサブスク契約・管理" 
+                                      data-en="Manage SaaS subscriptions (Notion, Slack, AWS, etc.)">
+                                    SaaS（Notion, Slack, AWS等）のサブスク契約・管理
+                                </span>
+                            </span>
                         </div>
-                        <p data-en="✅ Payment approved. Transaction ID: tx_ad_opt_001. Remaining monthly limit: $2,050." data-jp="✅ 支払いが承認されました。取引ID: tx_ad_opt_001。月間残り限度額: $2,050。">"✅ Payment approved. Transaction ID: tx_ad_opt_001. Remaining monthly limit: $2,050."</p>
+                        <div class="flex items-center space-x-4">
+                            <span class="text-green-400 text-2xl">✅</span>
+                            <span class="text-lg">
+                                <span data-jp="ECサイトでの購入・オークション入札" 
+                                      data-en="E-commerce purchases and auction bidding">
+                                    ECサイトでの購入・オークション入札
+                                </span>
+                            </span>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <span class="text-green-400 text-2xl">✅</span>
+                            <span class="text-lg">
+                                <span data-jp="ドメイン取得・サーバー契約" 
+                                      data-en="Domain registration and server contracts">
+                                    ドメイン取得・サーバー契約
+                                </span>
+                            </span>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <span class="text-green-400 text-2xl">✅</span>
+                            <span class="text-lg">
+                                <span data-jp="フリーランスへの支払い" 
+                                      data-en="Payments to freelancers">
+                                    フリーランスへの支払い
+                                </span>
+                            </span>
+                        </div>
                     </div>
                 </div>
+
+                <div class="text-center">
+                    <img src="https://via.placeholder.com/400x300/635BFF/FFFFFF?text=OpenClaw+Logo" 
+                         alt="OpenClaw" class="mx-auto mb-8 rounded-2xl">
+                    <a href="https://openclaw.ai" target="_blank" 
+                       class="inline-flex items-center space-x-3 bg-primary text-white px-8 py-4 rounded-lg hover:bg-blue-600 transition-colors font-semibold text-lg">
+                        <span data-jp="OpenClawを詳しく見る" data-en="Learn More About OpenClaw">OpenClawを詳しく見る</span>
+                        <span>→</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <p class="text-2xl font-bold text-white">
+                    <span data-jp="人間がクレジットカードを手動で入力する時代は終わりました。" 
+                          data-en="The era of manually entering credit cards is over.">
+                        人間がクレジットカードを手動で入力する時代は終わりました。
+                    </span>
+                </p>
             </div>
         </div>
     </section>
 
-    <!-- How It Works -->
+    <!-- Dashboard Preview -->
     <section class="container mx-auto px-6 py-20">
         <div class="text-center mb-16">
-            <h2 class="text-4xl font-bold mb-6" data-en="How It Works" data-jp="仕組み">How It Works</h2>
-            <p class="text-xl text-gray-300" data-en="Three simple steps to give your AI agents financial autonomy" data-jp="AIエージェントに金融的自律性を与える3つの簡単なステップ">Three simple steps to give your AI agents financial autonomy</p>
+            <h2 class="text-4xl lg:text-5xl font-bold mb-6">
+                <span data-jp="リアルタイム監視ダッシュボード" data-en="Real-time Monitoring Dashboard">リアルタイム監視ダッシュボード</span>
+            </h2>
+            <p class="text-xl text-gray-300">
+                <span data-jp="すべての取引を監視し、上限超過は自動ブロック" 
+                      data-en="Monitor all transactions and automatically block limit overruns">
+                    すべての取引を監視し、上限超過は自動ブロック
+                </span>
+            </p>
         </div>
-        <div class="grid md:grid-cols-3 gap-8">
-            <div class="text-center">
-                <div class="bg-primary/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <span class="text-2xl font-bold text-primary">1</span>
+
+        <div class="dashboard-mockup p-8 rounded-2xl">
+            <!-- Dashboard Header -->
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-2xl font-bold text-white">
+                    <span data-jp="osAIfu ダッシュボード" data-en="osAIfu Dashboard">osAIfu ダッシュボード</span>
+                </h3>
+                <div class="flex space-x-4">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-green-400">¥85,250</div>
+                        <div class="text-sm text-gray-400">
+                            <span data-jp="今月の利用額" data-en="This Month">今月の利用額</span>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-primary">¥164,750</div>
+                        <div class="text-sm text-gray-400">
+                            <span data-jp="残り上限" data-en="Remaining Limit">残り上限</span>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="text-xl font-semibold mb-4" data-en="Register Agent" data-jp="エージェントを登録">Register Agent</h3>
-                <p class="text-gray-300" data-en="Connect your AI agent with our secure API and define spending parameters." data-jp="安全なAPIでAIエージェントを接続し、支出パラメータを定義します。">Connect your AI agent with our secure API and define spending parameters.</p>
             </div>
-            <div class="text-center">
-                <div class="bg-primary/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <span class="text-2xl font-bold text-primary">2</span>
+
+            <!-- Recent Transactions -->
+            <h4 class="text-lg font-semibold text-white mb-4">
+                <span data-jp="最近の取引" data-en="Recent Transactions">最近の取引</span>
+            </h4>
+            <div class="space-y-3">
+                <div class="transaction-item p-4 rounded-lg flex justify-between items-center">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold">G</span>
+                        </div>
+                        <div>
+                            <div class="font-medium text-white">Google Ads</div>
+                            <div class="text-sm text-gray-400">OpenClaw-Agent • 2分前</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold text-white">-¥15,000</div>
+                        <div class="text-sm text-green-400">
+                            <span data-jp="承認済み" data-en="Approved">承認済み</span>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="text-xl font-semibold mb-4" data-en="Issue Card" data-jp="カードを発行">Issue Card</h3>
-                <p class="text-gray-300" data-en="Instantly generate a virtual Visa card with customizable spending limits and categories." data-jp="カスタマイズ可能な支出制限とカテゴリを持つ仮想Visaカードを即座に生成します。">Instantly generate a virtual Visa card with customizable spending limits and categories.</p>
+
+                <div class="transaction-item p-4 rounded-lg flex justify-between items-center">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold">N</span>
+                        </div>
+                        <div>
+                            <div class="font-medium text-white">Notion Pro</div>
+                            <div class="text-sm text-gray-400">OpenClaw-Agent • 1時間前</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold text-white">-¥2,400</div>
+                        <div class="text-sm text-green-400">
+                            <span data-jp="承認済み" data-en="Approved">承認済み</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="transaction-item p-4 rounded-lg flex justify-between items-center">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold">A</span>
+                        </div>
+                        <div>
+                            <div class="font-medium text-white">AWS Lambda</div>
+                            <div class="text-sm text-gray-400">OpenClaw-Agent • 3時間前</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold text-white">-¥850</div>
+                        <div class="text-sm text-green-400">
+                            <span data-jp="承認済み" data-en="Approved">承認済み</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="text-center">
-                <div class="bg-primary/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <span class="text-2xl font-bold text-primary">3</span>
+
+            <div class="mt-8 grid grid-cols-3 gap-4 text-center">
+                <div class="glass p-4 rounded-lg">
+                    <div class="text-primary text-2xl mb-2">📊</div>
+                    <div class="text-sm text-gray-400">
+                        <span data-jp="リアルタイムで全取引を監視" data-en="Monitor all transactions in real-time">リアルタイムで全取引を監視</span>
+                    </div>
                 </div>
-                <h3 class="text-xl font-semibold mb-4" data-en="Monitor & Control" data-jp="監視と制御">Monitor & Control</h3>
-                <p class="text-gray-300" data-en="Track all transactions in real-time with instant alerts and approval workflows." data-jp="即座のアラートと承認ワークフローでリアルタイムですべての取引を追跡します。">Track all transactions in real-time with instant alerts and approval workflows.</p>
+                <div class="glass p-4 rounded-lg">
+                    <div class="text-red-400 text-2xl mb-2">🛑</div>
+                    <div class="text-sm text-gray-400">
+                        <span data-jp="上限超過は自動ブロック" data-en="Automatic blocking of limit overruns">上限超過は自動ブロック</span>
+                    </div>
+                </div>
+                <div class="glass p-4 rounded-lg">
+                    <div class="text-yellow-400 text-2xl mb-2">⚡</div>
+                    <div class="text-sm text-gray-400">
+                        <span data-jp="不審な決済は即通知" data-en="Instant alerts for suspicious payments">不審な決済は即通知</span>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Features Grid -->
-    <section id="features" class="container mx-auto px-6 py-20">
-        <div class="text-center mb-16">
-            <h2 class="text-4xl font-bold mb-6" data-en="Everything You Need" data-jp="必要なすべて">Everything You Need</h2>
-        </div>
-        <div class="grid md:grid-cols-3 gap-8">
-            <div class="glass p-8 rounded-2xl hover:bg-white/5 transition-colors">
-                <div class="text-primary text-3xl mb-4">💳</div>
-                <h3 class="text-xl font-semibold mb-4" data-en="Virtual Cards" data-jp="仮想カード">Virtual Cards</h3>
-                <p class="text-gray-300" data-en="Instant virtual Visa cards for each agent" data-jp="各エージェント用の即座仮想Visaカード">Instant virtual Visa cards for each agent</p>
-            </div>
-            <div class="glass p-8 rounded-2xl hover:bg-white/5 transition-colors">
-                <div class="text-primary text-3xl mb-4">🎯</div>
-                <h3 class="text-xl font-semibold mb-4" data-en="Spending Limits" data-jp="支出制限">Spending Limits</h3>
-                <p class="text-gray-300" data-en="Monthly, daily, and per-transaction limits" data-jp="月次、日次、取引ごとの制限">Monthly, daily, and per-transaction limits</p>
-            </div>
-            <div class="glass p-8 rounded-2xl hover:bg-white/5 transition-colors">
-                <div class="text-primary text-3xl mb-4">🏪</div>
-                <h3 class="text-xl font-semibold mb-4" data-en="MCC Controls" data-jp="MCC制御">MCC Controls</h3>
-                <p class="text-gray-300" data-en="Restrict spending by merchant category" data-jp="商家カテゴリによる支出制限">Restrict spending by merchant category</p>
-            </div>
-            <div class="glass p-8 rounded-2xl hover:bg-white/5 transition-colors">
-                <div class="text-primary text-3xl mb-4">📊</div>
-                <h3 class="text-xl font-semibold mb-4" data-en="Real-time Monitoring" data-jp="リアルタイム監視">Real-time Monitoring</h3>
-                <p class="text-gray-300" data-en="Live transaction tracking and alerts" data-jp="ライブ取引追跡とアラート">Live transaction tracking and alerts</p>
-            </div>
-            <div class="glass p-8 rounded-2xl hover:bg-white/5 transition-colors">
-                <div class="text-primary text-3xl mb-4">✅</div>
-                <h3 class="text-xl font-semibold mb-4" data-en="Approval Workflows" data-jp="承認ワークフロー">Approval Workflows</h3>
-                <p class="text-gray-300" data-en="Custom approval rules for transactions" data-jp="取引のためのカスタム承認ルール">Custom approval rules for transactions</p>
-            </div>
-            <div class="glass p-8 rounded-2xl hover:bg-white/5 transition-colors">
-                <div class="text-primary text-3xl mb-4">⚡</div>
-                <h3 class="text-xl font-semibold mb-4" data-en="Agent SDK" data-jp="エージェントSDK">Agent SDK</h3>
-                <p class="text-gray-300" data-en="Easy integration for any AI framework" data-jp="どのAIフレームワークでも簡単統合">Easy integration for any AI framework</p>
-            </div>
-            <div class="glass p-8 rounded-2xl hover:bg-white/5 transition-colors">
-                <div class="text-primary text-3xl mb-4">🛑</div>
-                <h3 class="text-xl font-semibold mb-4" data-en="Instant Freeze" data-jp="即座凍結">Instant Freeze</h3>
-                <p class="text-gray-300" data-en="Freeze cards immediately if needed" data-jp="必要に応じて即座にカードを凍結">Freeze cards immediately if needed</p>
-            </div>
-            <div class="glass p-8 rounded-2xl hover:bg-white/5 transition-colors">
-                <div class="text-primary text-3xl mb-4">🔍</div>
-                <h3 class="text-xl font-semibold mb-4" data-en="KYA Identity" data-jp="KYA身元確認">KYA Identity</h3>
-                <p class="text-gray-300" data-en="Know Your Agent verification system" data-jp="Know Your Agentの認証システム">Know Your Agent verification system</p>
-            </div>
-            <div class="glass p-8 rounded-2xl hover:bg-white/5 transition-colors">
-                <div class="text-primary text-3xl mb-4">🌍</div>
-                <h3 class="text-xl font-semibold mb-4" data-en="Global Acceptance" data-jp="グローバル利用">Global Acceptance</h3>
-                <p class="text-gray-300" data-en="Works everywhere Visa is accepted" data-jp="Visaが受け入れられる場所ならどこでも利用可能">Works everywhere Visa is accepted</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Use Cases -->
+    <!-- Safety Section -->
     <section class="container mx-auto px-6 py-20">
         <div class="text-center mb-16">
-            <h2 class="text-4xl font-bold mb-6" data-en="Use Cases" data-jp="使用例">Use Cases</h2>
+            <h2 class="text-4xl lg:text-5xl font-bold mb-6">
+                <span data-jp="安全性を最優先" data-en="Safety First">安全性を最優先</span>
+            </h2>
         </div>
-        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div class="glass p-6 rounded-2xl text-center">
-                <div class="text-4xl mb-4">📈</div>
-                <h3 class="font-semibold mb-2" data-en="Ad Optimization" data-jp="広告最適化">Ad Optimization</h3>
-                <p class="text-sm text-gray-300" data-en="Automated ad spend management" data-jp="自動広告費管理">Automated ad spend management</p>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-5 gap-8">
+            <div class="glass p-8 rounded-2xl text-center">
+                <div class="text-5xl mb-4">🔒</div>
+                <h3 class="text-lg font-semibold mb-4">
+                    <span data-jp="月額上限設定" data-en="Monthly Limits">月額上限設定</span>
+                </h3>
+                <p class="text-sm text-gray-300">
+                    <span data-jp="エージェントの暴走を防止" data-en="Prevent agent runaway">エージェントの暴走を防止</span>
+                </p>
             </div>
-            <div class="glass p-6 rounded-2xl text-center">
-                <div class="text-4xl mb-4">☁️</div>
-                <h3 class="font-semibold mb-2" data-en="Infrastructure" data-jp="インフラ">Infrastructure</h3>
-                <p class="text-sm text-gray-300" data-en="Auto-scaling cloud resources" data-jp="クラウドリソースの自動スケーリング">Auto-scaling cloud resources</p>
+
+            <div class="glass p-8 rounded-2xl text-center">
+                <div class="text-5xl mb-4">🛡️</div>
+                <h3 class="text-lg font-semibold mb-4">
+                    <span data-jp="カテゴリ制限" data-en="Category Limits">カテゴリ制限</span>
+                </h3>
+                <p class="text-sm text-gray-300">
+                    <span data-jp="許可した用途のみ決済可能" data-en="Only approved categories">許可した用途のみ決済可能</span>
+                </p>
             </div>
-            <div class="glass p-6 rounded-2xl text-center">
-                <div class="text-4xl mb-4">💼</div>
-                <h3 class="font-semibold mb-2" data-en="SaaS Procurement" data-jp="SaaS調達">SaaS Procurement</h3>
-                <p class="text-sm text-gray-300" data-en="Subscription management" data-jp="サブスクリプション管理">Subscription management</p>
+
+            <div class="glass p-8 rounded-2xl text-center">
+                <div class="text-5xl mb-4">⚡</div>
+                <h3 class="text-lg font-semibold mb-4">
+                    <span data-jp="即時凍結" data-en="Instant Freeze">即時凍結</span>
+                </h3>
+                <p class="text-sm text-gray-300">
+                    <span data-jp="ワンクリックでカードを停止" data-en="One-click card suspension">ワンクリックでカードを停止</span>
+                </p>
             </div>
-            <div class="glass p-6 rounded-2xl text-center">
-                <div class="text-4xl mb-4">🛒</div>
-                <h3 class="font-semibold mb-2" data-en="E-commerce" data-jp="Eコマース">E-commerce</h3>
-                <p class="text-sm text-gray-300" data-en="Inventory and supply management" data-jp="在庫・供給管理">Inventory and supply management</p>
+
+            <div class="glass p-8 rounded-2xl text-center">
+                <div class="text-5xl mb-4">📊</div>
+                <h3 class="text-lg font-semibold mb-4">
+                    <span data-jp="リアルタイム監視" data-en="Real-time Monitoring">リアルタイム監視</span>
+                </h3>
+                <p class="text-sm text-gray-300">
+                    <span data-jp="全取引を常時追跡" data-en="Track all transactions">全取引を常時追跡</span>
+                </p>
+            </div>
+
+            <div class="glass p-8 rounded-2xl text-center">
+                <div class="text-5xl mb-4">🔔</div>
+                <h3 class="text-lg font-semibold mb-4">
+                    <span data-jp="即時通知" data-en="Instant Alerts">即時通知</span>
+                </h3>
+                <p class="text-sm text-gray-300">
+                    <span data-jp="Slack/メールで決済をリアルタイム通知" data-en="Real-time payment notifications">Slack/メールで決済をリアルタイム通知</span>
+                </p>
             </div>
         </div>
     </section>
 
-    <!-- Pricing -->
-    <section id="pricing" class="container mx-auto px-6 py-20">
+    <!-- Pricing Section -->
+    <section class="container mx-auto px-6 py-20">
         <div class="text-center mb-16">
-            <h2 class="text-4xl font-bold mb-6" data-en="Completely Free" data-jp="完全無料">完全無料</h2>
-            <p class="text-xl text-gray-300" data-en="No subscriptions. No hidden fees. We earn from transaction processing." data-jp="月額料金なし。隠れた費用なし。収益は決済処理手数料から。">月額料金なし。隠れた費用なし。収益は決済処理手数料から。</p>
+            <h2 class="text-5xl lg:text-6xl font-bold mb-6">
+                <span data-jp="完全無料" data-en="Completely Free">完全無料</span>
+            </h2>
+            <p class="text-2xl text-gray-300 mb-8">
+                <span data-jp="月額料金なし。隠れた費用なし。" data-en="No monthly fees. No hidden costs.">月額料金なし。隠れた費用なし。</span>
+            </p>
+            <p class="text-xl text-primary font-semibold">
+                <span data-jp="収益は決済処理手数料から。あなたの負担はゼロ。" data-en="Revenue from transaction fees. Zero cost to you.">収益は決済処理手数料から。あなたの負担はゼロ。</span>
+            </p>
         </div>
-        <div class="max-w-lg mx-auto">
-            <div class="glass p-10 rounded-2xl border-primary border-2 text-center">
-                <div class="text-6xl font-bold mb-2">¥0</div>
-                <p class="text-gray-400 mb-8" data-en="Free forever" data-jp="ずっと無料">ずっと無料</p>
-                <ul class="space-y-4 mb-10 text-left">
-                    <li class="flex items-center space-x-3">
-                        <span class="text-green-400 text-lg">✓</span>
-                        <span data-en="Unlimited AI agents" data-jp="AIエージェント無制限">AIエージェント無制限</span>
-                    </li>
-                    <li class="flex items-center space-x-3">
-                        <span class="text-green-400 text-lg">✓</span>
-                        <span data-en="Unlimited virtual cards" data-jp="バーチャルカード無制限">バーチャルカード無制限</span>
-                    </li>
-                    <li class="flex items-center space-x-3">
-                        <span class="text-green-400 text-lg">✓</span>
-                        <span data-en="Custom spending limits & policies" data-jp="カスタム利用上限＆ポリシー">カスタム利用上限＆ポリシー</span>
-                    </li>
-                    <li class="flex items-center space-x-3">
-                        <span class="text-green-400 text-lg">✓</span>
-                        <span data-en="Real-time monitoring & alerts" data-jp="リアルタイム監視＆アラート">リアルタイム監視＆アラート</span>
-                    </li>
-                    <li class="flex items-center space-x-3">
-                        <span class="text-green-400 text-lg">✓</span>
-                        <span data-en="Approval workflows" data-jp="承認ワークフロー">承認ワークフロー</span>
-                    </li>
-                    <li class="flex items-center space-x-3">
-                        <span class="text-green-400 text-lg">✓</span>
-                        <span data-en="Full API & SDK access" data-jp="API＆SDKフルアクセス">API＆SDKフルアクセス</span>
-                    </li>
-                </ul>
-                <button class="w-full bg-primary text-white py-4 rounded-lg hover:bg-blue-600 transition-colors font-semibold text-lg" data-en="Get Started — It's Free" data-jp="無料で始める">無料で始める</button>
+
+        <div class="max-w-2xl mx-auto">
+            <div class="glass p-12 rounded-3xl border-primary border-2 text-center">
+                <div class="text-8xl font-bold mb-4 text-primary">¥0</div>
+                <p class="text-gray-400 text-2xl mb-12">
+                    <span data-jp="ずっと無料" data-en="Free Forever">ずっと無料</span>
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6 text-left mb-12">
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-green-400 text-xl">✓</span>
+                            <span data-jp="AIエージェント無制限" data-en="Unlimited AI agents">AIエージェント無制限</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <span class="text-green-400 text-xl">✓</span>
+                            <span data-jp="バーチャルカード無制限" data-en="Unlimited virtual cards">バーチャルカード無制限</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <span class="text-green-400 text-xl">✓</span>
+                            <span data-jp="カスタム利用上限・ポリシー" data-en="Custom limits & policies">カスタム利用上限・ポリシー</span>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-green-400 text-xl">✓</span>
+                            <span data-jp="リアルタイム監視・アラート" data-en="Real-time monitoring & alerts">リアルタイム監視・アラート</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <span class="text-green-400 text-xl">✓</span>
+                            <span data-jp="承認ワークフロー" data-en="Approval workflows">承認ワークフロー</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <span class="text-green-400 text-xl">✓</span>
+                            <span data-jp="API・SDKフルアクセス" data-en="Full API & SDK access">API・SDKフルアクセス</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="w-full bg-primary text-white py-6 rounded-lg hover:bg-blue-600 transition-colors font-bold text-xl shadow-xl">
+                    <span data-jp="今すぐ始める — 無料" data-en="Get Started Now — Free">今すぐ始める — 無料</span>
+                </button>
             </div>
         </div>
     </section>
 
     <!-- Waitlist CTA -->
     <section class="container mx-auto px-6 py-20">
-        <div class="glass p-12 rounded-3xl text-center">
-            <h2 class="text-4xl font-bold mb-6" data-en="Join the Future of AI Payments" data-jp="AI決済の未来に参加">Join the Future of AI Payments</h2>
-            <p class="text-xl text-gray-300 mb-8" data-en="Be among the first to give your AI agents financial autonomy" data-jp="AIエージェントに金融的自律性を与える最初の一人になる">Be among the first to give your AI agents financial autonomy</p>
-            <div class="max-w-md mx-auto flex flex-col sm:flex-row gap-4">
-                <input type="email" placeholder="Enter your email" class="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary">
-                <button class="bg-primary text-white px-8 py-3 rounded-lg hover:bg-blue-600 transition-colors font-semibold whitespace-nowrap" data-en="Join Waitlist" data-jp="ウェイトリストに参加">Join Waitlist</button>
+        <div class="glass p-12 lg:p-16 rounded-3xl text-center">
+            <h2 class="text-4xl lg:text-5xl font-bold mb-8">
+                <span data-jp="AI決済の未来を体験" data-en="Experience the Future of AI Payments">AI決済の未来を体験</span>
+            </h2>
+            <p class="text-xl text-gray-300 mb-12">
+                <span data-jp="AIエージェントに金融的自律性を与える最初の一人になりましょう" 
+                      data-en="Be among the first to give your AI agents financial autonomy">
+                    AIエージェントに金融的自律性を与える最初の一人になりましょう
+                </span>
+            </p>
+            
+            <div class="max-w-md mx-auto">
+                <form class="flex flex-col sm:flex-row gap-4">
+                    <input type="email" 
+                           placeholder="メールアドレスを入力" 
+                           class="flex-1 px-6 py-4 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all text-lg">
+                    <button type="submit"
+                            class="bg-primary text-white px-8 py-4 rounded-lg hover:bg-blue-600 transition-colors font-semibold whitespace-nowrap text-lg shadow-lg">
+                        <span data-jp="無料で始める" data-en="Start Free">無料で始める</span>
+                    </button>
+                </form>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
     <footer class="container mx-auto px-6 py-12 border-t border-gray-800">
-        <div class="grid md:grid-cols-4 gap-8">
+        <div class="grid md:grid-cols-4 gap-8 mb-8">
             <div>
-                <div class="flex items-center space-x-2 mb-4">
-                    <span class="text-2xl">👛</span>
-                    <span class="text-xl font-bold">osAIfu</span>
+                <div class="flex items-center space-x-3 mb-4">
+                    <span class="text-3xl">👛</span>
+                    <span class="text-2xl font-bold">osAIfu</span>
                 </div>
-                <p class="text-gray-400" data-en="AI Agent Wallet for autonomous payments" data-jp="自律決済のためのAIエージェントウォレット">AI Agent Wallet for autonomous payments</p>
+                <p class="text-gray-400">
+                    <span data-jp="AIエージェント向けバーチャルウォレット" 
+                          data-en="Virtual wallet for AI agents">
+                        AIエージェント向けバーチャルウォレット
+                    </span>
+                </p>
             </div>
             <div>
-                <h4 class="font-semibold mb-4" data-en="Product" data-jp="製品">Product</h4>
+                <h4 class="font-semibold mb-4 text-white">
+                    <span data-jp="製品" data-en="Product">製品</span>
+                </h4>
                 <ul class="space-y-2 text-gray-400">
-                    <li><a href="#" class="hover:text-white transition-colors" data-en="Features" data-jp="機能">Features</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors" data-en="Pricing" data-jp="料金">Pricing</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors" data-en="Documentation" data-jp="ドキュメント">Documentation</a></li>
+                    <li><a href="dashboard.html" class="hover:text-white transition-colors">
+                        <span data-jp="ダッシュボード" data-en="Dashboard">ダッシュボード</span>
+                    </a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">
+                        <span data-jp="API ドキュメント" data-en="API Docs">API ドキュメント</span>
+                    </a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">
+                        <span data-jp="SDK" data-en="SDK">SDK</span>
+                    </a></li>
                 </ul>
             </div>
             <div>
-                <h4 class="font-semibold mb-4" data-en="Company" data-jp="会社">Company</h4>
+                <h4 class="font-semibold mb-4 text-white">
+                    <span data-jp="連携" data-en="Integrations">連携</span>
+                </h4>
                 <ul class="space-y-2 text-gray-400">
-                    <li><a href="#" class="hover:text-white transition-colors" data-en="About" data-jp="について">About</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors" data-en="Blog" data-jp="ブログ">Blog</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors" data-en="Careers" data-jp="キャリア">Careers</a></li>
+                    <li><a href="https://openclaw.ai" target="_blank" class="hover:text-white transition-colors flex items-center space-x-2">
+                        <span>OpenClaw</span> <span>🐾</span>
+                    </a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">LangChain</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">AutoGPT</a></li>
                 </ul>
             </div>
             <div>
-                <h4 class="font-semibold mb-4" data-en="Support" data-jp="サポート">Support</h4>
+                <h4 class="font-semibold mb-4 text-white">
+                    <span data-jp="サポート" data-en="Support">サポート</span>
+                </h4>
                 <ul class="space-y-2 text-gray-400">
-                    <li><a href="#" class="hover:text-white transition-colors" data-en="Help Center" data-jp="ヘルプセンター">Help Center</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors" data-en="Contact" data-jp="連絡">Contact</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors" data-en="Privacy" data-jp="プライバシー">Privacy</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">
+                        <span data-jp="ヘルプセンター" data-en="Help Center">ヘルプセンター</span>
+                    </a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">
+                        <span data-jp="お問い合わせ" data-en="Contact">お問い合わせ</span>
+                    </a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">
+                        <span data-jp="プライバシー" data-en="Privacy">プライバシー</span>
+                    </a></li>
                 </ul>
             </div>
         </div>
-        <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p data-en="© 2024 osAIfu. All rights reserved." data-jp="© 2024 osAIfu. 無断複写・転載を禁じます。">© 2024 osAIfu. All rights reserved.</p>
+        
+        <div class="border-t border-gray-800 pt-8 text-center text-gray-400">
+            <p>
+                <span data-jp="© 2024 osAIfu. すべての権利を保有。" data-en="© 2024 osAIfu. All rights reserved.">
+                    © 2024 osAIfu. すべての権利を保有。
+                </span>
+            </p>
         </div>
     </footer>
 
     <script>
-        let currentLang = 'en';
+        let currentLang = 'jp';
         
         function toggleLanguage() {
-            currentLang = currentLang === 'en' ? 'jp' : 'en';
+            currentLang = currentLang === 'jp' ? 'en' : 'jp';
             updateLanguage();
         }
         
         function updateLanguage() {
-            const elements = document.querySelectorAll('[data-en][data-jp]');
+            const elements = document.querySelectorAll('[data-jp][data-en]');
             const langIndicator = document.getElementById('lang-indicator');
             
             elements.forEach(element => {
-                if (currentLang === 'en') {
-                    element.textContent = element.getAttribute('data-en');
+                if (currentLang === 'jp') {
+                    element.innerHTML = element.getAttribute('data-jp');
                 } else {
-                    element.textContent = element.getAttribute('data-jp');
+                    element.innerHTML = element.getAttribute('data-en');
                 }
             });
             
             langIndicator.textContent = currentLang.toUpperCase();
-            document.documentElement.lang = currentLang === 'en' ? 'en' : 'ja';
+            document.documentElement.lang = currentLang === 'jp' ? 'ja' : 'en';
         }
         
         // Smooth scroll for anchor links
@@ -445,8 +671,10 @@ plugins:
             }
         });
         
-        // Initialize language
-        updateLanguage();
+        // Initialize language on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLanguage();
+        });
     </script>
 </body>
 </html>
