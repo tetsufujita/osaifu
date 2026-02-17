@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>osAIfu — The Wallet for AI Agents</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Inter', 'sans-serif'] },
+      colors: {
+        brand: { 50:'#f0f5ff', 100:'#e0eaff', 200:'#c2d5ff', 300:'#93b4fd', 400:'#6390fa', 500:'#3b6cf5', 600:'#2451e0', 700:'#1a3fbd' },
+        dark: { 700:'#1e1e32', 800:'#16162a', 900:'#0f0f1a', 950:'#080812' }
+      }
+    }
+  }
+}
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { background: #080812; }
+  .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.06); }
+  .glow-card { box-shadow: 0 0 60px rgba(59,108,245,0.1), 0 0 120px rgba(59,108,245,0.05); }
+  .card-shine { background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 40%, rgba(255,255,255,0.04) 100%); }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+  .float { animation: float 6s ease-in-out infinite; }
+  @keyframes float2 { 0%,100%{transform:translateY(0) rotate(-2deg)} 50%{transform:translateY(-8px) rotate(0deg)} }
+  .float2 { animation: float2 5s ease-in-out infinite; }
+  @keyframes pulse-glow { 0%,100%{box-shadow:0 0 20px rgba(59,108,245,0.2)} 50%{box-shadow:0 0 40px rgba(59,108,245,0.4)} }
+  .pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+  .gradient-text { background: linear-gradient(135deg, #fff 0%, #93b4fd 50%, #6390fa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero-bg { background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(59,108,245,0.12) 0%, transparent 70%); }
+  .section-glow { background: radial-gradient(ellipse 60% 40% at 50% 50%, rgba(59,108,245,0.06) 0%, transparent 70%); }
+  .feature-card { transition: transform 0.3s, border-color 0.3s; }
+  .feature-card:hover { transform: translateY(-4px); border-color: rgba(59,108,245,0.3); }
+  .cta-btn { transition: all 0.3s; box-shadow: 0 4px 20px rgba(59,108,245,0.3); }
+  .cta-btn:hover { box-shadow: 0 6px 30px rgba(59,108,245,0.5); transform: translateY(-1px); }
+  .input-glow:focus { box-shadow: 0 0 0 2px rgba(59,108,245,0.3); }
+  @keyframes slide-up { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+  .animate-in { animation: slide-up 0.6s ease-out forwards; }
+  .risk-line { background: linear-gradient(90deg, #ef4444 0%, #ef4444 var(--risk), transparent var(--risk)); }
+</style>
+</head>
+<body class="text-white font-sans antialiased overflow-x-hidden">
+
+<!-- Nav -->
+<nav class="fixed top-0 w-full z-50 border-b border-white/5" style="background:rgba(8,8,18,0.8);backdrop-filter:blur(20px)">
+  <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-sm">👛</div>
+      <span class="text-lg font-bold tracking-tight">osAIfu</span>
+    </div>
+    <div class="hidden md:flex items-center gap-8 text-sm text-white/50">
+      <a href="#problem" class="hover:text-white transition">Problem</a>
+      <a href="#solution" class="hover:text-white transition">Solution</a>
+      <a href="#features" class="hover:text-white transition">Features</a>
+      <a href="#pricing" class="hover:text-white transition">Pricing</a>
+    </div>
+    <a href="#waitlist" class="px-4 py-2 text-sm rounded-lg bg-brand-600 hover:bg-brand-500 transition font-medium">Join Waitlist</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero-bg min-h-screen flex items-center pt-16">
+  <div class="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-16 items-center">
+    <div>
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass text-xs text-white/50 mb-6">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        Now accepting early access signups
+      </div>
+      <h1 class="text-5xl md:text-6xl font-black leading-[1.1] mb-6">
+        Give your AI agents<br>
+        <span class="gradient-text">a wallet,</span><br>
+        not your credit card.
+      </h1>
+      <p class="text-lg text-white/50 leading-relaxed mb-8 max-w-lg">
+        Prepaid virtual cards with spending limits, category controls, and real-time monitoring — purpose-built for autonomous AI agents.
+      </p>
+      <div class="flex gap-4 items-center">
+        <a href="#waitlist" class="cta-btn px-8 py-3.5 rounded-xl bg-brand-600 font-semibold text-base">Get Early Access</a>
+        <a href="#solution" class="text-sm text-white/40 hover:text-white transition flex items-center gap-1">See how it works ↓</a>
+      </div>
+      <div class="flex items-center gap-6 mt-10 text-xs text-white/30">
+        <span class="flex items-center gap-1.5">🔒 Visa network</span>
+        <span class="flex items-center gap-1.5">⚡ Instant issuance</span>
+        <span class="flex items-center gap-1.5">🤖 Agent SDK</span>
+      </div>
+    </div>
+
+    <!-- Floating card visual -->
+    <div class="relative flex justify-center">
+      <div class="float glow-card rounded-3xl p-8 w-[380px] bg-gradient-to-br from-brand-600 via-brand-700 to-dark-800 relative overflow-hidden">
+        <div class="card-shine absolute inset-0 rounded-3xl"></div>
+        <div class="relative">
+          <div class="flex justify-between items-start mb-16">
+            <div>
+              <p class="text-[10px] text-white/40 tracking-widest uppercase">osAIfu Virtual Card</p>
+              <p class="text-sm font-medium mt-1">Ad-Optimizer Agent</p>
+            </div>
+            <span class="text-xl font-black tracking-wider">VISA</span>
+          </div>
+          <p class="text-xl tracking-[0.3em] font-mono mb-8">•••• •••• •••• 4829</p>
+          <div class="flex justify-between items-end">
+            <div>
+              <p class="text-[9px] text-white/30 uppercase">Monthly Limit</p>
+              <p class="text-sm font-semibold">$2,500</p>
+            </div>
+            <div>
+              <p class="text-[9px] text-white/30 uppercase">Remaining</p>
+              <p class="text-sm font-semibold text-emerald-400">$1,847</p>
+            </div>
+            <div>
+              <p class="text-[9px] text-white/30 uppercase">Status</p>
+              <p class="text-sm font-semibold text-emerald-400">● Active</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Small floating card behind -->
+      <div class="float2 absolute -bottom-4 -left-8 glow-card rounded-2xl p-5 w-[240px] bg-gradient-to-br from-purple-600 via-purple-700 to-dark-800 opacity-60 -rotate-6">
+        <div class="card-shine absolute inset-0 rounded-2xl"></div>
+        <div class="relative">
+          <p class="text-[9px] text-white/40 tracking-widest uppercase">osAIfu</p>
+          <p class="text-xs font-medium mt-0.5">Data-Crawler Agent</p>
+          <p class="text-sm tracking-[0.2em] font-mono mt-4">•••• 7731</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Problem -->
+<section id="problem" class="py-28 relative">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <p class="text-brand-400 text-sm font-medium mb-3 tracking-wider uppercase">The Problem</p>
+      <h2 class="text-4xl font-bold mb-4">Your AI agents need to spend money.<br>But how?</h2>
+      <p class="text-white/40 max-w-2xl mx-auto">As AI agents become autonomous — buying API credits, running ads, managing SaaS subscriptions — the question of <em>how they pay</em> becomes critical.</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="glass rounded-2xl p-8 border-red-500/10">
+        <div class="text-3xl mb-4">🚨</div>
+        <h3 class="text-lg font-semibold mb-3 text-red-400">Share your personal card?</h3>
+        <p class="text-sm text-white/40 leading-relaxed">No spending limits. No category restrictions. No kill switch. One hallucination away from a $50,000 charge.</p>
+        <div class="mt-4 h-2 rounded-full bg-white/5 overflow-hidden">
+          <div class="h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full" style="width:95%"></div>
+        </div>
+        <p class="text-[10px] text-red-400/60 mt-1">Risk: Catastrophic</p>
+      </div>
+      <div class="glass rounded-2xl p-8 border-yellow-500/10">
+        <div class="text-3xl mb-4">😓</div>
+        <h3 class="text-lg font-semibold mb-3 text-yellow-400">Corporate cards for bots?</h3>
+        <p class="text-sm text-white/40 leading-relaxed">Traditional corporate cards (Brex, Ramp) require human identity. They weren't designed for non-human entities.</p>
+        <div class="mt-4 h-2 rounded-full bg-white/5 overflow-hidden">
+          <div class="h-full bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full" style="width:60%"></div>
+        </div>
+        <p class="text-[10px] text-yellow-400/60 mt-1">Friction: High</p>
+      </div>
+      <div class="glass rounded-2xl p-8 border-purple-500/10">
+        <div class="text-3xl mb-4">🔌</div>
+        <h3 class="text-lg font-semibold mb-3 text-purple-400">API-only payments?</h3>
+        <p class="text-sm text-white/40 leading-relaxed">Crypto rails and API-to-API solutions only work where merchants integrate them. Google Ads doesn't accept USDC.</p>
+        <div class="mt-4 h-2 rounded-full bg-white/5 overflow-hidden">
+          <div class="h-full bg-gradient-to-r from-purple-500 to-purple-600 rounded-full" style="width:40%"></div>
+        </div>
+        <p class="text-[10px] text-purple-400/60 mt-1">Coverage: Limited</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Solution -->
+<section id="solution" class="py-28 section-glow relative">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <p class="text-brand-400 text-sm font-medium mb-3 tracking-wider uppercase">The Solution</p>
+      <h2 class="text-4xl font-bold mb-4">Prepaid cards. Built for agents.</h2>
+      <p class="text-white/40 max-w-2xl mx-auto">osAIfu issues virtual Visa cards with granular spending controls — so your AI agents can pay anywhere, safely.</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="text-center">
+        <div class="w-16 h-16 rounded-2xl bg-brand-600/10 border border-brand-500/20 flex items-center justify-center text-3xl mx-auto mb-5">1️⃣</div>
+        <h3 class="font-semibold mb-2">Register your agent</h3>
+        <p class="text-sm text-white/40">Name it, assign a team, set a budget. One click.</p>
+      </div>
+      <div class="text-center">
+        <div class="w-16 h-16 rounded-2xl bg-brand-600/10 border border-brand-500/20 flex items-center justify-center text-3xl mx-auto mb-5">2️⃣</div>
+        <h3 class="font-semibold mb-2">Issue a virtual card</h3>
+        <p class="text-sm text-white/40">Instant Visa card with monthly limits, per-transaction caps, and merchant category controls.</p>
+      </div>
+      <div class="text-center">
+        <div class="w-16 h-16 rounded-2xl bg-brand-600/10 border border-brand-500/20 flex items-center justify-center text-3xl mx-auto mb-5">3️⃣</div>
+        <h3 class="font-semibold mb-2">Let it spend — safely</h3>
+        <p class="text-sm text-white/40">Your agent pays autonomously. You monitor in real-time. Freeze instantly if needed.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section id="features" class="py-28">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <p class="text-brand-400 text-sm font-medium mb-3 tracking-wider uppercase">Features</p>
+      <h2 class="text-4xl font-bold mb-4">Everything you need to trust<br>your agents with money</h2>
+    </div>
+    <div class="grid md:grid-cols-3 gap-5">
+      <div class="feature-card glass rounded-2xl p-7 border border-transparent">
+        <div class="text-2xl mb-4">💳</div>
+        <h3 class="font-semibold mb-2">Virtual Card Issuance</h3>
+        <p class="text-sm text-white/40">Issue unlimited virtual Visa cards. One per agent, or multiple per project. Instant activation.</p>
+      </div>
+      <div class="feature-card glass rounded-2xl p-7 border border-transparent">
+        <div class="text-2xl mb-4">🎯</div>
+        <h3 class="font-semibold mb-2">Spending Limits</h3>
+        <p class="text-sm text-white/40">Monthly caps, per-transaction limits, daily budgets. Your agents spend within boundaries you define.</p>
+      </div>
+      <div class="feature-card glass rounded-2xl p-7 border border-transparent">
+        <div class="text-2xl mb-4">🏷️</div>
+        <h3 class="font-semibold mb-2">Category Controls (MCC)</h3>
+        <p class="text-sm text-white/40">Restrict spending to specific merchant categories. Ad agents can only buy ads. Infra agents only pay for cloud.</p>
+      </div>
+      <div class="feature-card glass rounded-2xl p-7 border border-transparent">
+        <div class="text-2xl mb-4">⚡</div>
+        <h3 class="font-semibold mb-2">Real-time Monitoring</h3>
+        <p class="text-sm text-white/40">See every transaction the moment it happens. Alerts, dashboards, and anomaly detection built in.</p>
+      </div>
+      <div class="feature-card glass rounded-2xl p-7 border border-transparent">
+        <div class="text-2xl mb-4">✋</div>
+        <h3 class="font-semibold mb-2">Approval Workflows</h3>
+        <p class="text-sm text-white/40">Set thresholds for human approval. Transactions over $500? Require a human sign-off via Slack or email.</p>
+      </div>
+      <div class="feature-card glass rounded-2xl p-7 border border-transparent">
+        <div class="text-2xl mb-4">🔌</div>
+        <h3 class="font-semibold mb-2">Agent SDK & API</h3>
+        <p class="text-sm text-white/40">Your agents query their balance, view history, and receive webhooks. First-class developer experience.</p>
+      </div>
+      <div class="feature-card glass rounded-2xl p-7 border border-transparent">
+        <div class="text-2xl mb-4">🛑</div>
+        <h3 class="font-semibold mb-2">Instant Freeze</h3>
+        <p class="text-sm text-white/40">One click to freeze any card. Or set auto-freeze rules based on anomaly patterns. Kill switch always ready.</p>
+      </div>
+      <div class="feature-card glass rounded-2xl p-7 border border-transparent">
+        <div class="text-2xl mb-4">🤖</div>
+        <h3 class="font-semibold mb-2">KYA: Know Your Agent</h3>
+        <p class="text-sm text-white/40">Agent identity verification. Audit trail of which agent did what, when, and why. Full accountability.</p>
+      </div>
+      <div class="feature-card glass rounded-2xl p-7 border border-transparent">
+        <div class="text-2xl mb-4">🌍</div>
+        <h3 class="font-semibold mb-2">Works Everywhere</h3>
+        <p class="text-sm text-white/40">Visa network = 80M+ merchants worldwide. Google Ads, AWS, Shopify, Notion — if it takes a card, it works.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Social proof / Use cases -->
+<section class="py-28 section-glow">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <p class="text-brand-400 text-sm font-medium mb-3 tracking-wider uppercase">Use Cases</p>
+      <h2 class="text-4xl font-bold mb-4">Built for the agentic era</h2>
+    </div>
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="glass rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-xl">📣</div>
+          <h3 class="font-semibold">AI Ad Managers</h3>
+        </div>
+        <p class="text-sm text-white/40 mb-4">Your ad optimization agent autonomously adjusts bids and budgets on Google Ads and Meta — but only within the monthly limit you set. MCC-locked to advertising only.</p>
+        <div class="flex gap-2 text-[11px]">
+          <span class="px-2 py-1 rounded-full bg-blue-500/10 text-blue-400">Google Ads</span>
+          <span class="px-2 py-1 rounded-full bg-blue-500/10 text-blue-400">Meta Ads</span>
+          <span class="px-2 py-1 rounded-full bg-blue-500/10 text-blue-400">TikTok Ads</span>
+        </div>
+      </div>
+      <div class="glass rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-xl">☁️</div>
+          <h3 class="font-semibold">Infrastructure Agents</h3>
+        </div>
+        <p class="text-sm text-white/40 mb-4">DevOps agents that spin up cloud resources, pay for compute, and scale infrastructure. Auto-freeze kicks in if daily spend exceeds your threshold.</p>
+        <div class="flex gap-2 text-[11px]">
+          <span class="px-2 py-1 rounded-full bg-orange-500/10 text-orange-400">AWS</span>
+          <span class="px-2 py-1 rounded-full bg-orange-500/10 text-orange-400">GCP</span>
+          <span class="px-2 py-1 rounded-full bg-orange-500/10 text-orange-400">Azure</span>
+        </div>
+      </div>
+      <div class="glass rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-xl">📦</div>
+          <h3 class="font-semibold">SaaS Procurement</h3>
+        </div>
+        <p class="text-sm text-white/40 mb-4">IT agents that manage SaaS subscriptions, handle renewals, and negotiate upgrades — all with whitelisted merchant controls.</p>
+        <div class="flex gap-2 text-[11px]">
+          <span class="px-2 py-1 rounded-full bg-purple-500/10 text-purple-400">Notion</span>
+          <span class="px-2 py-1 rounded-full bg-purple-500/10 text-purple-400">Slack</span>
+          <span class="px-2 py-1 rounded-full bg-purple-500/10 text-purple-400">Figma</span>
+        </div>
+      </div>
+      <div class="glass rounded-2xl p-8">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-xl">🛒</div>
+          <h3 class="font-semibold">E-commerce & Purchasing</h3>
+        </div>
+        <p class="text-sm text-white/40 mb-4">Procurement agents that comparison-shop, purchase supplies, and manage vendor payments — all within pre-approved budgets.</p>
+        <div class="flex gap-2 text-[11px]">
+          <span class="px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-400">Amazon</span>
+          <span class="px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-400">Shopify</span>
+          <span class="px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-400">Alibaba</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section id="pricing" class="py-28">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <p class="text-brand-400 text-sm font-medium mb-3 tracking-wider uppercase">Pricing</p>
+      <h2 class="text-4xl font-bold mb-4">Simple, transparent pricing</h2>
+      <p class="text-white/40">Start free. Scale as your agents grow.</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+      <div class="glass rounded-2xl p-8">
+        <h3 class="font-semibold mb-1">Starter</h3>
+        <p class="text-3xl font-bold mb-1">Free</p>
+        <p class="text-xs text-white/30 mb-6">Up to 3 agents</p>
+        <ul class="space-y-3 text-sm text-white/50">
+          <li class="flex gap-2"><span class="text-emerald-400">✓</span> 3 virtual cards</li>
+          <li class="flex gap-2"><span class="text-emerald-400">✓</span> $5,000/mo total limit</li>
+          <li class="flex gap-2"><span class="text-emerald-400">✓</span> Basic dashboard</li>
+          <li class="flex gap-2"><span class="text-emerald-400">✓</span> Email alerts</li>
+          <li class="flex gap-2"><span class="text-white/20">—</span> <span class="text-white/20">API access</span></li>
+        </ul>
+      </div>
+      <div class="glass rounded-2xl p-8 border-brand-500/30 glow-card relative">
+        <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-brand-600 text-xs font-medium">Popular</div>
+        <h3 class="font-semibold mb-1">Pro</h3>
+        <p class="text-3xl font-bold mb-1">$49<span class="text-base font-normal text-white/40">/mo</span></p>
+        <p class="text-xs text-white/30 mb-6">Up to 20 agents</p>
+        <ul class="space-y-3 text-sm text-white/50">
+          <li class="flex gap-2"><span class="text-emerald-400">✓</span> 20 virtual cards</li>
+          <li class="flex gap-2"><span class="text-emerald-400">✓</span> $50,000/mo total limit</li>
+          <li class="flex gap-2"><span class="text-emerald-400">✓</span> Full dashboard + analytics</li>
+          <li class="flex gap-2"><span class="text-emerald-400">✓</span> Webhook + Slack alerts</li>
+          <li class="flex gap-2"><span class="text-emerald-400">✓</span> Agent SDK & API</li>
+          <li class="flex gap-2"><span class="text-emerald-400">✓</span> Approval workflows</li>
+        </ul>
+      </div>
+      <div class="glass rounded-2xl p-8">
+        <h3 class="font-semibold mb-1">Enterprise</h3>
+        <p class="text-3xl font-bold mb-1">Custom</p>
+        <p class="text-xs text-white/30 mb-6">Unlimited agents</p>
+        <ul class="space-y-3 text-sm text-white/50">
+          <li class="flex gap-2"><span class="text-emerald-400">✓</span> Unlimited cards</li>
+          <li class="flex gap-2"><span class="text-emerald-400">✓</span> Custom limits</li>
+          <li class="flex gap-2"><span class="text-emerald-400">✓</span> White-label option</li>
+          <li class="flex gap-2"><span class="text-emerald-400">✓</span> SSO & RBAC</li>
+          <li class="flex gap-2"><span class="text-emerald-400">✓</span> Dedicated support</li>
+          <li class="flex gap-2"><span class="text-emerald-400">✓</span> Custom policy engine</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA / Waitlist -->
+<section id="waitlist" class="py-28 section-glow">
+  <div class="max-w-2xl mx-auto px-6 text-center">
+    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-3xl mx-auto mb-8 pulse-glow">👛</div>
+    <h2 class="text-4xl font-bold mb-4">Ready to give your agents<br>their own wallet?</h2>
+    <p class="text-white/40 mb-10">Join the waitlist for early access. First 100 companies get the Pro plan free for 6 months.</p>
+    
+    <form id="waitlist-form" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-4" onsubmit="event.preventDefault();handleSubmit()">
+      <input id="email-input" type="email" placeholder="you@company.com" required class="input-glow flex-1 px-5 py-3.5 rounded-xl bg-white/5 border border-white/10 text-sm outline-none focus:border-brand-500 placeholder-white/30">
+      <button type="submit" class="cta-btn px-8 py-3.5 rounded-xl bg-brand-600 font-semibold text-sm whitespace-nowrap">Join Waitlist →</button>
+    </form>
+    <p id="form-status" class="text-xs text-white/30">No spam. We'll notify you when we launch.</p>
+    
+    <div class="flex items-center justify-center gap-6 mt-12 text-xs text-white/30">
+      <span>🔒 SOC 2 compliant</span>
+      <span>•</span>
+      <span>💳 Powered by Visa</span>
+      <span>•</span>
+      <span>🌍 Available worldwide</span>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="border-t border-white/5 py-10">
+  <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-2.5">
+      <div class="w-6 h-6 rounded-md bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-xs">👛</div>
+      <span class="text-sm font-semibold">osAIfu</span>
+      <span class="text-xs text-white/20 ml-2">© 2025</span>
+    </div>
+    <div class="flex gap-6 text-xs text-white/30">
+      <a href="#" class="hover:text-white/60">Privacy</a>
+      <a href="#" class="hover:text-white/60">Terms</a>
+      <a href="#" class="hover:text-white/60">Contact</a>
+      <a href="#" class="hover:text-white/60">Twitter</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+function handleSubmit() {
+  const email = document.getElementById('email-input').value;
+  const status = document.getElementById('form-status');
+  const form = document.getElementById('waitlist-form');
+  status.textContent = '🎉 You\'re on the list! We\'ll be in touch.';
+  status.classList.remove('text-white/30');
+  status.classList.add('text-emerald-400');
+  form.innerHTML = '<div class="px-5 py-3.5 rounded-xl glass text-sm text-white/60">✅ ' + email + ' — registered!</div>';
+}
+</script>
+
+</body>
+</html>
