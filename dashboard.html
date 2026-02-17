@@ -47,6 +47,152 @@
         .badge-approved { background: rgba(16, 185, 129, 0.15); color: #10b981; }
         .badge-blocked { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
         .badge-frozen { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            background-color: rgba(0, 0, 0, 0.75);
+            animation: fadeIn 0.2s ease-out;
+        }
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        /* Step animations */
+        .step-content {
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.3s ease-in-out;
+        }
+        .step-content.active {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        .step-content.prev {
+            transform: translateX(-100%);
+        }
+        
+        /* Success animation */
+        @keyframes checkmark {
+            0% { transform: scale(0) rotate(45deg); }
+            50% { transform: scale(1.2) rotate(45deg); }
+            100% { transform: scale(1) rotate(45deg); }
+        }
+        .checkmark {
+            animation: checkmark 0.6s ease-in-out;
+        }
+        
+        /* Card animation */
+        @keyframes cardAppear {
+            0% { transform: translateY(20px) rotateY(20deg); opacity: 0; }
+            100% { transform: translateY(0) rotateY(0deg); opacity: 1; }
+        }
+        .card-appear {
+            animation: cardAppear 0.8s ease-out;
+        }
+        
+        /* Range slider styles */
+        .range-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: #374151;
+            outline: none;
+        }
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #635BFF;
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        .range-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #635BFF;
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        
+        /* Toggle switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #374151;
+            transition: .3s;
+            border-radius: 24px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        input:checked + .toggle-slider {
+            background-color: #635BFF;
+        }
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+        
+        /* Inline edit */
+        .inline-edit {
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .inline-edit:hover {
+            background-color: rgba(99, 91, 255, 0.1);
+        }
+        .inline-edit-input {
+            background: transparent;
+            border: 1px solid #635BFF;
+            border-radius: 4px;
+            padding: 2px 6px;
+            width: 100px;
+            color: inherit;
+            font-size: inherit;
+            font-family: inherit;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
     </style>
     <script>
         tailwind.config = {
@@ -170,13 +316,13 @@
                             <div class="flex items-center justify-between mb-4">
                                 <div>
                                     <p class="text-sm text-gray-400" data-i18n="active_agents">アクティブエージェント</p>
-                                    <p class="text-2xl font-semibold">4</p>
+                                    <p class="text-2xl font-semibold" id="agent-count">4</p>
                                     <p class="text-sm text-green-400" data-i18n="all_operational">すべて稼働中</p>
                                 </div>
                                 <div class="text-3xl">🤖</div>
                             </div>
                             <div class="mt-4">
-                                <button class="w-full bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium" data-i18n="add_agent">
+                                <button onclick="openAgentCreationModal()" class="w-full bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium" data-i18n="add_agent">
                                     + エージェント追加
                                 </button>
                             </div>
@@ -186,7 +332,7 @@
                     <!-- Agent List -->
                     <div class="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
                         <h3 class="text-lg font-semibold mb-6" data-i18n="agents_list">エージェント一覧</h3>
-                        <div class="space-y-4">
+                        <div id="agents-container" class="space-y-4">
                             <!-- Agent 1 -->
                             <div class="flex items-center justify-between py-4 border-b border-gray-800 last:border-b-0">
                                 <div class="flex items-center space-x-4">
@@ -200,7 +346,7 @@
                                     <div class="w-32">
                                         <div class="flex justify-between text-sm mb-1">
                                             <span class="text-gray-400">利用額</span>
-                                            <span>¥320K / ¥400K</span>
+                                            <span><span class="inline-edit" data-current="320000" data-max="400000" onclick="enableInlineEdit(this)">¥320K</span> / ¥400K</span>
                                         </div>
                                         <div class="w-full bg-gray-800 rounded-full h-1.5">
                                             <div class="progress-bar h-1.5 rounded-full" style="width: 80%"></div>
@@ -223,7 +369,7 @@
                                     <div class="w-32">
                                         <div class="flex justify-between text-sm mb-1">
                                             <span class="text-gray-400">利用額</span>
-                                            <span>¥186K / ¥300K</span>
+                                            <span><span class="inline-edit" data-current="186000" data-max="300000" onclick="enableInlineEdit(this)">¥186K</span> / ¥300K</span>
                                         </div>
                                         <div class="w-full bg-gray-800 rounded-full h-1.5">
                                             <div class="progress-bar h-1.5 rounded-full" style="width: 62%"></div>
@@ -246,7 +392,7 @@
                                     <div class="w-32">
                                         <div class="flex justify-between text-sm mb-1">
                                             <span class="text-gray-400">利用額</span>
-                                            <span>¥143K / ¥200K</span>
+                                            <span><span class="inline-edit" data-current="143000" data-max="200000" onclick="enableInlineEdit(this)">¥143K</span> / ¥200K</span>
                                         </div>
                                         <div class="w-full bg-gray-800 rounded-full h-1.5">
                                             <div class="progress-bar h-1.5 rounded-full" style="width: 71%"></div>
@@ -269,7 +415,7 @@
                                     <div class="w-32">
                                         <div class="flex justify-between text-sm mb-1">
                                             <span class="text-gray-400">利用額</span>
-                                            <span>¥98K / ¥200K</span>
+                                            <span><span class="inline-edit" data-current="98000" data-max="200000" onclick="enableInlineEdit(this)">¥98K</span> / ¥200K</span>
                                         </div>
                                         <div class="w-full bg-gray-800 rounded-full h-1.5">
                                             <div class="progress-bar h-1.5 rounded-full" style="width: 49%"></div>
@@ -391,7 +537,12 @@
 
                         <!-- Card Details -->
                         <div class="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
-                            <h3 class="text-lg font-semibold mb-4" data-i18n="card_details">カード詳細</h3>
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold" data-i18n="card_details">カード詳細</h3>
+                                <button onclick="openCardIssuanceModal('Ad-Optimizer')" class="bg-primary text-white px-3 py-1.5 rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium" data-i18n="add_card">
+                                    + カード追加
+                                </button>
+                            </div>
                             <div class="space-y-3 text-sm">
                                 <div class="flex justify-between">
                                     <span class="text-gray-400" data-i18n="card_number">カード番号</span>
@@ -578,6 +729,420 @@ else:
         </main>
     </div>
 
+    <!-- Agent Creation Modal -->
+    <div id="agent-creation-modal" class="modal">
+        <div class="bg-gray-900 rounded-2xl shadow-2xl border border-gray-800 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <!-- Modal Header -->
+            <div class="p-6 border-b border-gray-800">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-semibold" data-i18n="create_new_agent">新しいエージェントを作成</h2>
+                    <button onclick="closeAgentCreationModal()" class="text-gray-400 hover:text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <!-- Progress Indicator -->
+                <div class="flex items-center justify-between mt-4">
+                    <div class="flex space-x-2">
+                        <div id="step-indicator-1" class="step-indicator active w-2.5 h-2.5 rounded-full bg-primary"></div>
+                        <div id="step-indicator-2" class="step-indicator w-2.5 h-2.5 rounded-full bg-gray-600"></div>
+                        <div id="step-indicator-3" class="step-indicator w-2.5 h-2.5 rounded-full bg-gray-600"></div>
+                        <div id="step-indicator-4" class="step-indicator w-2.5 h-2.5 rounded-full bg-gray-600"></div>
+                        <div id="step-indicator-5" class="step-indicator w-2.5 h-2.5 rounded-full bg-gray-600"></div>
+                    </div>
+                    <span id="step-counter" class="text-sm text-gray-400">1 / 5</span>
+                </div>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6">
+                <!-- Step 1: Basic Information -->
+                <div id="step-1" class="step-content active">
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-2" data-i18n="step_1_basic_info">ステップ 1: 基本情報</h3>
+                        <p class="text-sm text-gray-400" data-i18n="step_1_description">エージェントの基本情報を入力してください</p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2" data-i18n="agent_name">エージェント名</label>
+                            <input id="agent-name" type="text" placeholder="例: Ad-Optimizer" class="w-full bg-gray-800 text-white px-4 py-3 rounded-lg border border-gray-700 focus:outline-none focus:border-primary">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2" data-i18n="agent_description">エージェントの説明</label>
+                            <textarea id="agent-description" rows="3" placeholder="例: Google/Meta広告の自動運用" class="w-full bg-gray-800 text-white px-4 py-3 rounded-lg border border-gray-700 focus:outline-none focus:border-primary resize-none"></textarea>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2" data-i18n="team_department">チーム/部門</label>
+                            <select id="agent-team" class="w-full bg-gray-800 text-white px-4 py-3 rounded-lg border border-gray-700 focus:outline-none focus:border-primary">
+                                <option value="" data-i18n="select_team">チームを選択してください</option>
+                                <option value="marketing" data-i18n="team_marketing">マーケティング</option>
+                                <option value="engineering" data-i18n="team_engineering">エンジニアリング</option>
+                                <option value="data" data-i18n="team_data">データ</option>
+                                <option value="it" data-i18n="team_it">IT</option>
+                                <option value="support" data-i18n="team_support">サポート</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Card Settings -->
+                <div id="step-2" class="step-content">
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-2" data-i18n="step_2_card_settings">ステップ 2: カード設定</h3>
+                        <p class="text-sm text-gray-400" data-i18n="step_2_description">バーチャルカードの設定を行います</p>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg">
+                            <div>
+                                <label class="text-sm font-medium" data-i18n="issue_virtual_card">バーチャルカードを発行する</label>
+                                <p class="text-xs text-gray-400" data-i18n="card_recommended">エージェントの決済に推奨</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input id="issue-card-toggle" type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div id="card-settings" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2" data-i18n="card_currency">カードの通貨</label>
+                                <div class="grid grid-cols-3 gap-3">
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="card-currency" value="JPY" checked class="sr-only">
+                                        <div class="border-2 border-gray-700 rounded-lg p-3 text-center hover:border-primary transition-colors currency-option">
+                                            <div class="text-lg">¥</div>
+                                            <div class="text-xs">JPY</div>
+                                        </div>
+                                    </label>
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="card-currency" value="USD" class="sr-only">
+                                        <div class="border-2 border-gray-700 rounded-lg p-3 text-center hover:border-primary transition-colors currency-option">
+                                            <div class="text-lg">$</div>
+                                            <div class="text-xs">USD</div>
+                                        </div>
+                                    </label>
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="card-currency" value="BRL" class="sr-only">
+                                        <div class="border-2 border-gray-700 rounded-lg p-3 text-center hover:border-primary transition-colors currency-option">
+                                            <div class="text-lg">R$</div>
+                                            <div class="text-xs">BRL</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2" data-i18n="card_nickname">カードのニックネーム</label>
+                                <input id="card-nickname" type="text" placeholder="Ad-Optimizer-001" class="w-full bg-gray-800 text-white px-4 py-3 rounded-lg border border-gray-700 focus:outline-none focus:border-primary">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Usage Limits -->
+                <div id="step-3" class="step-content">
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-2" data-i18n="step_3_usage_limits">ステップ 3: 利用制限</h3>
+                        <p class="text-sm text-gray-400" data-i18n="step_3_description">エージェントの利用制限を設定します</p>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-3" data-i18n="monthly_limit_setting">月額上限</label>
+                            <div class="space-y-3">
+                                <input id="monthly-limit-slider" type="range" min="10000" max="1000000" value="200000" class="w-full range-slider">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-sm text-gray-400">¥10,000</span>
+                                    <input id="monthly-limit-input" type="text" value="¥200,000" class="flex-1 bg-gray-800 text-white px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-primary text-center">
+                                    <span class="text-sm text-gray-400">¥1,000,000</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-3" data-i18n="per_transaction_limit">1取引あたりの上限</label>
+                            <div class="space-y-3">
+                                <input id="transaction-limit-slider" type="range" min="1000" max="100000" value="50000" class="w-full range-slider">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-sm text-gray-400">¥1,000</span>
+                                    <input id="transaction-limit-input" type="text" value="¥50,000" class="flex-1 bg-gray-800 text-white px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-primary text-center">
+                                    <span class="text-sm text-gray-400">¥100,000</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-3" data-i18n="mcc_restrictions">MCC制限</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
+                                    <input type="checkbox" class="rounded border-gray-600 text-primary focus:ring-primary focus:ring-offset-0">
+                                    <span class="text-sm" data-i18n="mcc_advertising">広告</span>
+                                </label>
+                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
+                                    <input type="checkbox" class="rounded border-gray-600 text-primary focus:ring-primary focus:ring-offset-0">
+                                    <span class="text-sm" data-i18n="mcc_cloud_saas">クラウド/SaaS</span>
+                                </label>
+                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
+                                    <input type="checkbox" class="rounded border-gray-600 text-primary focus:ring-primary focus:ring-offset-0">
+                                    <span class="text-sm" data-i18n="mcc_software">ソフトウェア</span>
+                                </label>
+                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
+                                    <input type="checkbox" class="rounded border-gray-600 text-primary focus:ring-primary focus:ring-offset-0">
+                                    <span class="text-sm" data-i18n="mcc_marketplace">マーケットプレイス</span>
+                                </label>
+                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg cursor-pointer col-span-2">
+                                    <input type="checkbox" class="rounded border-gray-600 text-primary focus:ring-primary focus:ring-offset-0" checked>
+                                    <span class="text-sm" data-i18n="mcc_all_categories">全カテゴリ許可</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-3" data-i18n="time_restrictions">時間制限</label>
+                            <div class="space-y-3">
+                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
+                                    <input type="radio" name="time-restriction" value="business-hours" class="text-primary focus:ring-primary focus:ring-offset-0">
+                                    <span class="text-sm" data-i18n="business_hours_only">営業時間のみ(9-18時)</span>
+                                </label>
+                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
+                                    <input type="radio" name="time-restriction" value="weekdays-only" class="text-primary focus:ring-primary focus:ring-offset-0">
+                                    <span class="text-sm" data-i18n="weekdays_only">平日のみ</span>
+                                </label>
+                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
+                                    <input type="radio" name="time-restriction" value="no-restriction" class="text-primary focus:ring-primary focus:ring-offset-0" checked>
+                                    <span class="text-sm" data-i18n="no_restrictions">制限なし</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Approval Flow -->
+                <div id="step-4" class="step-content">
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-2" data-i18n="step_4_approval_flow">ステップ 4: 承認フロー</h3>
+                        <p class="text-sm text-gray-400" data-i18n="step_4_description">承認プロセスの設定を行います</p>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-3" data-i18n="auto_approval_limit">自動承認の上限金額</label>
+                            <div class="space-y-3">
+                                <input id="auto-approval-slider" type="range" min="0" max="100000" value="10000" class="w-full range-slider">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-sm text-gray-400">¥0</span>
+                                    <input id="auto-approval-input" type="text" value="¥10,000" class="flex-1 bg-gray-800 text-white px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-primary text-center">
+                                    <span class="text-sm text-gray-400">¥100,000</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-3" data-i18n="above_limit_action">上限を超えた場合のアクション</label>
+                            <div class="space-y-3">
+                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
+                                    <input type="radio" name="above-limit-action" value="require-approval" class="text-primary focus:ring-primary focus:ring-offset-0" checked>
+                                    <div class="flex-1">
+                                        <div class="text-sm font-medium" data-i18n="require_approval_option">承認待ち</div>
+                                        <div class="text-xs text-gray-400" data-i18n="require_approval_desc">管理者の承認を待つ</div>
+                                    </div>
+                                </label>
+                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
+                                    <input type="radio" name="above-limit-action" value="block" class="text-primary focus:ring-primary focus:ring-offset-0">
+                                    <div class="flex-1">
+                                        <div class="text-sm font-medium" data-i18n="block_option">ブロック</div>
+                                        <div class="text-xs text-gray-400" data-i18n="block_desc">即座に取引を拒否</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-3" data-i18n="notification_destination">通知先</label>
+                            <div class="grid grid-cols-3 gap-3">
+                                <label class="flex items-center justify-center space-x-2 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
+                                    <input type="checkbox" class="rounded border-gray-600 text-primary focus:ring-primary focus:ring-offset-0" checked>
+                                    <span class="text-sm" data-i18n="email">メール</span>
+                                </label>
+                                <label class="flex items-center justify-center space-x-2 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
+                                    <input type="checkbox" class="rounded border-gray-600 text-primary focus:ring-primary focus:ring-offset-0">
+                                    <span class="text-sm">Slack</span>
+                                </label>
+                                <label class="flex items-center justify-center space-x-2 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
+                                    <input type="checkbox" class="rounded border-gray-600 text-primary focus:ring-primary focus:ring-offset-0">
+                                    <span class="text-sm" data-i18n="both">両方</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Confirmation -->
+                <div id="step-5" class="step-content">
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-2" data-i18n="step_5_confirmation">ステップ 5: 確認画面</h3>
+                        <p class="text-sm text-gray-400" data-i18n="step_5_description">設定内容を確認してください</p>
+                    </div>
+                    
+                    <div id="confirmation-summary" class="space-y-4 bg-gray-800/30 rounded-lg p-4">
+                        <!-- Summary content will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Success Screen -->
+                <div id="success-screen" class="step-content text-center" style="display: none;">
+                    <div class="mb-6">
+                        <div class="checkmark w-16 h-16 mx-auto mb-4 text-green-400">
+                            <svg class="w-full h-full" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-2" data-i18n="agent_created_success">エージェントが作成されました！</h3>
+                        <p class="text-sm text-gray-400" data-i18n="agent_created_description">新しいエージェントがダッシュボードに追加されました</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-6 border-t border-gray-800 flex justify-between">
+                <button id="prev-step-btn" onclick="previousStep()" class="px-6 py-2 text-gray-400 hover:text-white transition-colors" style="display: none;" data-i18n="previous">前へ</button>
+                <div class="flex space-x-3 ml-auto">
+                    <button onclick="closeAgentCreationModal()" class="px-6 py-2 text-gray-400 hover:text-white transition-colors" data-i18n="cancel">キャンセル</button>
+                    <button id="next-step-btn" onclick="nextStep()" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors" data-i18n="next">次へ</button>
+                    <button id="create-agent-btn" onclick="createAgent()" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors" style="display: none;" data-i18n="create">作成</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Issuance Modal -->
+    <div id="card-issuance-modal" class="modal">
+        <div class="bg-gray-900 rounded-2xl shadow-2xl border border-gray-800 w-full max-w-lg">
+            <!-- Modal Header -->
+            <div class="p-6 border-b border-gray-800">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-semibold" data-i18n="issue_new_card">新しいカードを発行</h2>
+                    <button onclick="closeCardIssuanceModal()" class="text-gray-400 hover:text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6" id="card-issuance-form">
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2" data-i18n="agent_name">エージェント名</label>
+                        <input id="card-agent-name" type="text" readonly class="w-full bg-gray-800/50 text-gray-400 px-4 py-3 rounded-lg border border-gray-700">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2" data-i18n="card_currency">カードの通貨</label>
+                        <div class="grid grid-cols-3 gap-3">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="card-issuance-currency" value="JPY" checked class="sr-only">
+                                <div class="border-2 border-gray-700 rounded-lg p-3 text-center hover:border-primary transition-colors currency-option">
+                                    <div class="text-lg">¥</div>
+                                    <div class="text-xs">JPY</div>
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="card-issuance-currency" value="USD" class="sr-only">
+                                <div class="border-2 border-gray-700 rounded-lg p-3 text-center hover:border-primary transition-colors currency-option">
+                                    <div class="text-lg">$</div>
+                                    <div class="text-xs">USD</div>
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="card-issuance-currency" value="BRL" class="sr-only">
+                                <div class="border-2 border-gray-700 rounded-lg p-3 text-center hover:border-primary transition-colors currency-option">
+                                    <div class="text-lg">R$</div>
+                                    <div class="text-xs">BRL</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-3" data-i18n="monthly_limit_setting">月額上限</label>
+                        <div class="space-y-3">
+                            <input id="card-monthly-limit-slider" type="range" min="10000" max="1000000" value="200000" class="w-full range-slider">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-sm text-gray-400">¥10,000</span>
+                                <input id="card-monthly-limit-input" type="text" value="¥200,000" class="flex-1 bg-gray-800 text-white px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-primary text-center">
+                                <span class="text-sm text-gray-400">¥1,000,000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Preview -->
+            <div id="card-preview" class="p-6" style="display: none;">
+                <div class="text-center">
+                    <div class="card-visual card-appear w-full max-w-xs h-44 mx-auto rounded-xl relative overflow-hidden shadow-2xl mb-6">
+                        <div class="absolute inset-0 p-4 flex flex-col justify-between">
+                            <div class="flex justify-between items-start">
+                                <div class="text-white">
+                                    <div class="text-xs opacity-80">Virtual Card</div>
+                                    <div class="font-semibold text-sm" id="preview-agent-name">Agent Name</div>
+                                </div>
+                                <div class="text-white text-lg font-bold">VISA</div>
+                            </div>
+                            <div class="text-white space-y-2">
+                                <div class="font-mono text-sm" id="preview-card-number">**** **** **** 1234</div>
+                                <div class="flex justify-between items-end">
+                                    <div>
+                                        <div class="text-xs opacity-80">EXP</div>
+                                        <div class="text-xs font-mono" id="preview-expiry">12/28</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs opacity-80">CVC</div>
+                                        <div class="text-xs font-mono" id="preview-cvc">***</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-400" data-i18n="card_number">カード番号</span>
+                            <div class="flex items-center space-x-2">
+                                <span id="masked-card-number" class="font-mono">**** **** **** 1234</span>
+                                <button onclick="toggleCardDetails('card-number')" class="text-primary hover:text-primary/80 text-xs" data-i18n="show">表示</button>
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-400">CVC</span>
+                            <div class="flex items-center space-x-2">
+                                <span id="masked-cvc" class="font-mono">***</span>
+                                <button onclick="toggleCardDetails('cvc')" class="text-primary hover:text-primary/80 text-xs" data-i18n="show">表示</button>
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-400" data-i18n="expiry_date">有効期限</span>
+                            <span class="font-mono">12/2028</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-6 border-t border-gray-800 flex justify-between">
+                <button onclick="closeCardIssuanceModal()" class="px-6 py-2 text-gray-400 hover:text-white transition-colors" data-i18n="cancel">キャンセル</button>
+                <button id="issue-card-btn" onclick="issueCard()" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors" data-i18n="issue_card">カードを発行</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Internationalization
         const i18n = {
@@ -597,6 +1162,7 @@ else:
                 active_agents: 'アクティブエージェント',
                 all_operational: 'すべて稼働中',
                 add_agent: '+ エージェント追加',
+                add_card: '+ カード追加',
                 agents_list: 'エージェント一覧',
                 active: '有効',
                 paused: '一時停止',
@@ -640,7 +1206,72 @@ else:
                 delete: '削除',
                 code_example: 'コード例',
                 view_docs: '📚 ドキュメント',
-                download_sdk: '⬇️ SDK ダウンロード'
+                download_sdk: '⬇️ SDK ダウンロード',
+                
+                // Agent creation modal
+                create_new_agent: '新しいエージェントを作成',
+                step_1_basic_info: 'ステップ 1: 基本情報',
+                step_1_description: 'エージェントの基本情報を入力してください',
+                agent_name: 'エージェント名',
+                agent_description: 'エージェントの説明',
+                team_department: 'チーム/部門',
+                select_team: 'チームを選択してください',
+                team_marketing: 'マーケティング',
+                team_engineering: 'エンジニアリング',
+                team_data: 'データ',
+                team_it: 'IT',
+                team_support: 'サポート',
+                
+                step_2_card_settings: 'ステップ 2: カード設定',
+                step_2_description: 'バーチャルカードの設定を行います',
+                issue_virtual_card: 'バーチャルカードを発行する',
+                card_recommended: 'エージェントの決済に推奨',
+                card_currency: 'カードの通貨',
+                card_nickname: 'カードのニックネーム',
+                
+                step_3_usage_limits: 'ステップ 3: 利用制限',
+                step_3_description: 'エージェントの利用制限を設定します',
+                monthly_limit_setting: '月額上限',
+                per_transaction_limit: '1取引あたりの上限',
+                mcc_restrictions: 'MCC制限',
+                mcc_advertising: '広告',
+                mcc_cloud_saas: 'クラウド/SaaS',
+                mcc_software: 'ソフトウェア',
+                mcc_marketplace: 'マーケットプレイス',
+                mcc_all_categories: '全カテゴリ許可',
+                time_restrictions: '時間制限',
+                business_hours_only: '営業時間のみ(9-18時)',
+                weekdays_only: '平日のみ',
+                no_restrictions: '制限なし',
+                
+                step_4_approval_flow: 'ステップ 4: 承認フロー',
+                step_4_description: '承認プロセスの設定を行います',
+                auto_approval_limit: '自動承認の上限金額',
+                above_limit_action: '上限を超えた場合のアクション',
+                require_approval_option: '承認待ち',
+                require_approval_desc: '管理者の承認を待つ',
+                block_option: 'ブロック',
+                block_desc: '即座に取引を拒否',
+                notification_destination: '通知先',
+                email: 'メール',
+                both: '両方',
+                
+                step_5_confirmation: 'ステップ 5: 確認画面',
+                step_5_description: '設定内容を確認してください',
+                agent_created_success: 'エージェントが作成されました！',
+                agent_created_description: '新しいエージェントがダッシュボードに追加されました',
+                
+                previous: '前へ',
+                next: '次へ',
+                cancel: 'キャンセル',
+                create: '作成',
+                
+                // Card issuance modal
+                issue_new_card: '新しいカードを発行',
+                issue_card: 'カードを発行',
+                show: '表示',
+                hide: '隠す',
+                expiry_date: '有効期限'
             },
             en: {
                 overview: 'Overview',
@@ -658,6 +1289,7 @@ else:
                 active_agents: 'Active Agents',
                 all_operational: 'All Operational',
                 add_agent: '+ Add Agent',
+                add_card: '+ Add Card',
                 agents_list: 'Agent List',
                 active: 'Active',
                 paused: 'Paused',
@@ -701,11 +1333,487 @@ else:
                 delete: 'Delete',
                 code_example: 'Code Example',
                 view_docs: '📚 Documentation',
-                download_sdk: '⬇️ Download SDK'
+                download_sdk: '⬇️ Download SDK',
+                
+                // Agent creation modal
+                create_new_agent: 'Create New Agent',
+                step_1_basic_info: 'Step 1: Basic Information',
+                step_1_description: 'Enter basic information about the agent',
+                agent_name: 'Agent Name',
+                agent_description: 'Agent Description',
+                team_department: 'Team/Department',
+                select_team: 'Select a team',
+                team_marketing: 'Marketing',
+                team_engineering: 'Engineering',
+                team_data: 'Data',
+                team_it: 'IT',
+                team_support: 'Support',
+                
+                step_2_card_settings: 'Step 2: Card Settings',
+                step_2_description: 'Configure virtual card settings',
+                issue_virtual_card: 'Issue Virtual Card',
+                card_recommended: 'Recommended for agent payments',
+                card_currency: 'Card Currency',
+                card_nickname: 'Card Nickname',
+                
+                step_3_usage_limits: 'Step 3: Usage Limits',
+                step_3_description: 'Set usage limits for the agent',
+                monthly_limit_setting: 'Monthly Limit',
+                per_transaction_limit: 'Per Transaction Limit',
+                mcc_restrictions: 'MCC Restrictions',
+                mcc_advertising: 'Advertising',
+                mcc_cloud_saas: 'Cloud/SaaS',
+                mcc_software: 'Software',
+                mcc_marketplace: 'Marketplace',
+                mcc_all_categories: 'All Categories',
+                time_restrictions: 'Time Restrictions',
+                business_hours_only: 'Business Hours Only (9-18)',
+                weekdays_only: 'Weekdays Only',
+                no_restrictions: 'No Restrictions',
+                
+                step_4_approval_flow: 'Step 4: Approval Flow',
+                step_4_description: 'Configure approval process',
+                auto_approval_limit: 'Auto-approval Limit',
+                above_limit_action: 'Action Above Limit',
+                require_approval_option: 'Require Approval',
+                require_approval_desc: 'Wait for admin approval',
+                block_option: 'Block',
+                block_desc: 'Reject transaction immediately',
+                notification_destination: 'Notification Destination',
+                email: 'Email',
+                both: 'Both',
+                
+                step_5_confirmation: 'Step 5: Confirmation',
+                step_5_description: 'Review your settings',
+                agent_created_success: 'Agent Created Successfully!',
+                agent_created_description: 'The new agent has been added to your dashboard',
+                
+                previous: 'Previous',
+                next: 'Next',
+                cancel: 'Cancel',
+                create: 'Create',
+                
+                // Card issuance modal
+                issue_new_card: 'Issue New Card',
+                issue_card: 'Issue Card',
+                show: 'Show',
+                hide: 'Hide',
+                expiry_date: 'Expiry Date'
             }
         };
 
         let currentLang = 'jp';
+        let currentStep = 1;
+        let maxSteps = 5;
+
+        // Agent creation modal functions
+        function openAgentCreationModal() {
+            document.getElementById('agent-creation-modal').classList.add('active');
+            currentStep = 1;
+            updateStepIndicators();
+            updateStepButtons();
+        }
+
+        function closeAgentCreationModal() {
+            document.getElementById('agent-creation-modal').classList.remove('active');
+            resetModalForm();
+        }
+
+        function resetModalForm() {
+            // Reset form fields
+            document.getElementById('agent-name').value = '';
+            document.getElementById('agent-description').value = '';
+            document.getElementById('agent-team').value = '';
+            document.getElementById('issue-card-toggle').checked = true;
+            document.querySelector('input[name="card-currency"][value="JPY"]').checked = true;
+            document.getElementById('card-nickname').value = '';
+            
+            // Reset sliders
+            document.getElementById('monthly-limit-slider').value = 200000;
+            document.getElementById('monthly-limit-input').value = '¥200,000';
+            document.getElementById('transaction-limit-slider').value = 50000;
+            document.getElementById('transaction-limit-input').value = '¥50,000';
+            document.getElementById('auto-approval-slider').value = 10000;
+            document.getElementById('auto-approval-input').value = '¥10,000';
+            
+            // Reset checkboxes and radio buttons
+            document.querySelectorAll('#agent-creation-modal input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.querySelectorAll('#agent-creation-modal input[type="radio"]').forEach(rb => rb.checked = false);
+            
+            // Set default selections
+            document.getElementById('issue-card-toggle').checked = true;
+            document.querySelector('input[name="card-currency"][value="JPY"]').checked = true;
+            document.querySelector('input[name="time-restriction"][value="no-restriction"]').checked = true;
+            document.querySelector('input[name="above-limit-action"][value="require-approval"]').checked = true;
+            document.querySelector('#agent-creation-modal input[type="checkbox"][checked]').checked = true;
+            
+            currentStep = 1;
+            updateStepIndicators();
+            updateStepButtons();
+            showStep(1);
+        }
+
+        function nextStep() {
+            if (currentStep < maxSteps) {
+                if (currentStep === 5) {
+                    generateConfirmationSummary();
+                }
+                currentStep++;
+                updateStepIndicators();
+                updateStepButtons();
+                showStep(currentStep);
+                
+                // Update card nickname automatically
+                if (currentStep === 2) {
+                    updateCardNickname();
+                }
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepIndicators();
+                updateStepButtons();
+                showStep(currentStep);
+            }
+        }
+
+        function showStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.remove('active');
+                content.classList.add('prev');
+            });
+            
+            // Show current step
+            setTimeout(() => {
+                document.getElementById(`step-${step}`).classList.remove('prev');
+                document.getElementById(`step-${step}`).classList.add('active');
+            }, 150);
+        }
+
+        function updateStepIndicators() {
+            for (let i = 1; i <= maxSteps; i++) {
+                const indicator = document.getElementById(`step-indicator-${i}`);
+                if (i <= currentStep) {
+                    indicator.classList.add('active');
+                    indicator.style.backgroundColor = '#635BFF';
+                } else {
+                    indicator.classList.remove('active');
+                    indicator.style.backgroundColor = '#4B5563';
+                }
+            }
+            document.getElementById('step-counter').textContent = `${currentStep} / ${maxSteps}`;
+        }
+
+        function updateStepButtons() {
+            const prevBtn = document.getElementById('prev-step-btn');
+            const nextBtn = document.getElementById('next-step-btn');
+            const createBtn = document.getElementById('create-agent-btn');
+            
+            prevBtn.style.display = currentStep > 1 ? 'block' : 'none';
+            
+            if (currentStep === maxSteps) {
+                nextBtn.style.display = 'none';
+                createBtn.style.display = 'block';
+            } else {
+                nextBtn.style.display = 'block';
+                createBtn.style.display = 'none';
+            }
+        }
+
+        function updateCardNickname() {
+            const agentName = document.getElementById('agent-name').value;
+            if (agentName) {
+                document.getElementById('card-nickname').value = `${agentName}-001`;
+            }
+        }
+
+        function generateConfirmationSummary() {
+            const agentName = document.getElementById('agent-name').value;
+            const agentDescription = document.getElementById('agent-description').value;
+            const agentTeam = document.getElementById('agent-team').value;
+            const issueCard = document.getElementById('issue-card-toggle').checked;
+            const cardCurrency = document.querySelector('input[name="card-currency"]:checked')?.value;
+            const cardNickname = document.getElementById('card-nickname').value;
+            const monthlyLimit = document.getElementById('monthly-limit-input').value;
+            const transactionLimit = document.getElementById('transaction-limit-input').value;
+            const autoApprovalLimit = document.getElementById('auto-approval-input').value;
+            
+            const teams = {
+                marketing: currentLang === 'jp' ? 'マーケティング' : 'Marketing',
+                engineering: currentLang === 'jp' ? 'エンジニアリング' : 'Engineering',
+                data: currentLang === 'jp' ? 'データ' : 'Data',
+                it: 'IT',
+                support: currentLang === 'jp' ? 'サポート' : 'Support'
+            };
+            
+            const summary = document.getElementById('confirmation-summary');
+            summary.innerHTML = `
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">${i18n[currentLang].agent_name}:</span>
+                        <span class="font-medium">${agentName}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">${i18n[currentLang].team_department}:</span>
+                        <span>${teams[agentTeam] || agentTeam}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">${i18n[currentLang].issue_virtual_card}:</span>
+                        <span class="${issueCard ? 'text-green-400' : 'text-red-400'}">${issueCard ? (currentLang === 'jp' ? 'はい' : 'Yes') : (currentLang === 'jp' ? 'いいえ' : 'No')}</span>
+                    </div>
+                    ${issueCard ? `
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">${i18n[currentLang].card_currency}:</span>
+                        <span>${cardCurrency}</span>
+                    </div>
+                    ` : ''}
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">${i18n[currentLang].monthly_limit}:</span>
+                        <span>${monthlyLimit}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">${i18n[currentLang].transaction_limit}:</span>
+                        <span>${transactionLimit}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">${i18n[currentLang].auto_approval_limit}:</span>
+                        <span>${autoApprovalLimit}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createAgent() {
+            // Show success animation
+            document.getElementById('step-5').style.display = 'none';
+            document.getElementById('success-screen').style.display = 'block';
+            document.getElementById('success-screen').classList.add('active');
+            
+            // Hide footer buttons
+            document.querySelector('#agent-creation-modal .p-6.border-t').style.display = 'none';
+            
+            // Add new agent to the list (dummy data)
+            setTimeout(() => {
+                const agentName = document.getElementById('agent-name').value || 'New-Agent';
+                const agentTeam = document.getElementById('agent-team').value || 'marketing';
+                const monthlyLimit = document.getElementById('monthly-limit-input').value.replace('¥', '').replace(',', '') || '200000';
+                
+                const teams = {
+                    marketing: currentLang === 'jp' ? 'Marketing Team' : 'Marketing Team',
+                    engineering: currentLang === 'jp' ? 'Engineering Team' : 'Engineering Team',
+                    data: currentLang === 'jp' ? 'Data Team' : 'Data Team',
+                    it: currentLang === 'jp' ? 'IT Team' : 'IT Team',
+                    support: currentLang === 'jp' ? 'Support Team' : 'Support Team'
+                };
+                
+                const agentContainer = document.getElementById('agents-container');
+                const newAgentHtml = `
+                    <div class="flex items-center justify-between py-4 border-b border-gray-800 last:border-b-0">
+                        <div class="flex items-center space-x-4">
+                            <div class="status-dot status-active"></div>
+                            <div>
+                                <h4 class="font-medium">${agentName}</h4>
+                                <p class="text-sm text-gray-400">${teams[agentTeam]}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-6">
+                            <div class="w-32">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-400">利用額</span>
+                                    <span><span class="inline-edit" data-current="0" data-max="${monthlyLimit}" onclick="enableInlineEdit(this)">¥0</span> / ¥${parseInt(monthlyLimit/1000)}K</span>
+                                </div>
+                                <div class="w-full bg-gray-800 rounded-full h-1.5">
+                                    <div class="progress-bar h-1.5 rounded-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <span class="badge-approved px-3 py-1 rounded-full text-xs font-medium" data-i18n="active">有効</span>
+                        </div>
+                    </div>
+                `;
+                
+                agentContainer.insertAdjacentHTML('beforeend', newAgentHtml);
+                
+                // Update agent count
+                const currentCount = parseInt(document.getElementById('agent-count').textContent);
+                document.getElementById('agent-count').textContent = currentCount + 1;
+                
+                // Close modal after showing success
+                setTimeout(() => {
+                    closeAgentCreationModal();
+                    // Reset success screen
+                    document.getElementById('success-screen').style.display = 'none';
+                    document.getElementById('step-5').style.display = 'block';
+                    document.querySelector('#agent-creation-modal .p-6.border-t').style.display = 'flex';
+                }, 2000);
+            }, 1500);
+        }
+
+        // Card issuance modal functions
+        function openCardIssuanceModal(agentName) {
+            document.getElementById('card-issuance-modal').classList.add('active');
+            document.getElementById('card-agent-name').value = agentName;
+            document.getElementById('card-issuance-form').style.display = 'block';
+            document.getElementById('card-preview').style.display = 'none';
+            document.getElementById('issue-card-btn').style.display = 'block';
+        }
+
+        function closeCardIssuanceModal() {
+            document.getElementById('card-issuance-modal').classList.remove('active');
+        }
+
+        function issueCard() {
+            // Generate fake card details
+            const cardNumber = generateCardNumber();
+            const cvc = generateCVC();
+            const expiry = generateExpiry();
+            const agentName = document.getElementById('card-agent-name').value;
+            
+            // Update preview
+            document.getElementById('preview-agent-name').textContent = agentName;
+            document.getElementById('preview-card-number').textContent = cardNumber.replace(/(.{4})/g, '$1 ');
+            document.getElementById('preview-expiry').textContent = expiry.slice(0, 2) + '/' + expiry.slice(2);
+            document.getElementById('preview-cvc').textContent = '***';
+            
+            document.getElementById('masked-card-number').textContent = `**** **** **** ${cardNumber.slice(-4)}`;
+            document.getElementById('masked-cvc').textContent = '***';
+            
+            // Store real values for toggle
+            document.getElementById('masked-card-number').setAttribute('data-real', cardNumber.replace(/(.{4})/g, '$1 ').trim());
+            document.getElementById('masked-cvc').setAttribute('data-real', cvc);
+            
+            // Show preview
+            document.getElementById('card-issuance-form').style.display = 'none';
+            document.getElementById('card-preview').style.display = 'block';
+            document.getElementById('issue-card-btn').style.display = 'none';
+        }
+
+        function toggleCardDetails(type) {
+            const element = type === 'card-number' ? 
+                document.getElementById('masked-card-number') : 
+                document.getElementById('masked-cvc');
+            const button = element.parentNode.querySelector('button');
+            
+            if (element.textContent.includes('*')) {
+                element.textContent = element.getAttribute('data-real');
+                button.textContent = i18n[currentLang].hide;
+                // Hide after 3 seconds
+                setTimeout(() => {
+                    if (type === 'card-number') {
+                        element.textContent = `**** **** **** ${element.getAttribute('data-real').slice(-4)}`;
+                    } else {
+                        element.textContent = '***';
+                    }
+                    button.textContent = i18n[currentLang].show;
+                }, 3000);
+            }
+        }
+
+        function generateCardNumber() {
+            return '4' + Math.random().toString().slice(2, 16);
+        }
+
+        function generateCVC() {
+            return Math.floor(Math.random() * 900 + 100).toString();
+        }
+
+        function generateExpiry() {
+            const year = new Date().getFullYear() + 4;
+            const month = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+            return month + year.toString().slice(-2);
+        }
+
+        // Inline editing functions
+        function enableInlineEdit(element) {
+            const currentValue = element.getAttribute('data-current');
+            const maxValue = element.getAttribute('data-max');
+            
+            const input = document.createElement('input');
+            input.className = 'inline-edit-input';
+            input.type = 'text';
+            input.value = '¥' + (parseInt(currentValue) / 1000) + 'K';
+            
+            element.parentNode.replaceChild(input, element);
+            input.focus();
+            input.select();
+            
+            function finishEdit() {
+                let value = input.value.replace('¥', '').replace('K', '').replace(',', '');
+                value = parseInt(value) * 1000;
+                
+                if (isNaN(value) || value < 0) {
+                    value = parseInt(currentValue);
+                }
+                
+                const newElement = element.cloneNode(true);
+                newElement.textContent = '¥' + (value / 1000) + 'K';
+                newElement.setAttribute('data-current', value.toString());
+                
+                input.parentNode.replaceChild(newElement, input);
+                
+                // Update progress bar
+                const progressBar = newElement.closest('.py-4').querySelector('.progress-bar');
+                const percentage = (value / parseInt(maxValue)) * 100;
+                progressBar.style.width = Math.min(percentage, 100) + '%';
+            }
+            
+            input.addEventListener('blur', finishEdit);
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    finishEdit();
+                }
+            });
+        }
+
+        // Slider event handlers
+        function setupSliders() {
+            const sliders = [
+                { slider: 'monthly-limit-slider', input: 'monthly-limit-input', prefix: '¥', suffix: '', divider: 1 },
+                { slider: 'transaction-limit-slider', input: 'transaction-limit-input', prefix: '¥', suffix: '', divider: 1 },
+                { slider: 'auto-approval-slider', input: 'auto-approval-input', prefix: '¥', suffix: '', divider: 1 },
+                { slider: 'card-monthly-limit-slider', input: 'card-monthly-limit-input', prefix: '¥', suffix: '', divider: 1 }
+            ];
+            
+            sliders.forEach(({ slider, input, prefix, suffix, divider }) => {
+                const sliderEl = document.getElementById(slider);
+                const inputEl = document.getElementById(input);
+                
+                if (sliderEl && inputEl) {
+                    sliderEl.addEventListener('input', function() {
+                        const value = parseInt(this.value);
+                        inputEl.value = prefix + (value / divider).toLocaleString() + suffix;
+                    });
+                    
+                    inputEl.addEventListener('input', function() {
+                        let value = this.value.replace(prefix, '').replace(suffix, '').replace(/,/g, '');
+                        value = parseInt(value) * divider;
+                        if (!isNaN(value)) {
+                            sliderEl.value = value;
+                        }
+                    });
+                }
+            });
+        }
+
+        // Currency option handlers
+        function setupCurrencyOptions() {
+            document.querySelectorAll('.currency-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const radio = this.parentElement.querySelector('input[type="radio"]');
+                    radio.checked = true;
+                    
+                    // Update visual state
+                    document.querySelectorAll('.currency-option').forEach(opt => {
+                        opt.classList.remove('border-primary');
+                        opt.classList.add('border-gray-700');
+                    });
+                    this.classList.remove('border-gray-700');
+                    this.classList.add('border-primary');
+                });
+            });
+        }
 
         // View switching
         function showView(viewName) {
@@ -767,10 +1875,25 @@ else:
             document.documentElement.lang = lang;
         }
 
+        // Toggle card settings visibility
+        document.addEventListener('change', function(e) {
+            if (e.target.id === 'issue-card-toggle') {
+                const cardSettings = document.getElementById('card-settings');
+                cardSettings.style.display = e.target.checked ? 'block' : 'none';
+            }
+        });
+
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             // Set initial language
             switchLanguage(currentLang);
+            
+            // Setup interactive elements
+            setupSliders();
+            setupCurrencyOptions();
+            
+            // Auto-update card nickname when agent name changes
+            document.getElementById('agent-name')?.addEventListener('input', updateCardNickname);
         });
     </script>
 </body>
