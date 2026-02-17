@@ -316,24 +316,34 @@ OSAIFU_CARD_ID=card_xxxxx</code></pre>
         <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             <!-- Card Issuance Preview -->
             <div class="glass p-6 rounded-2xl">
-                <div class="flex items-center space-x-2 mb-4">
+                <div class="flex items-center space-x-2 mb-6">
                     <span class="text-primary">💳</span>
                     <span class="text-sm font-semibold text-primary">
                         <span data-jp="カード発行" data-en="Card Issuance">Card Issuance</span>
                     </span>
                 </div>
-                <div class="bg-gradient-to-r from-primary to-purple-500 rounded-xl p-5 mb-4" style="transform: perspective(800px) rotateY(-3deg) rotateX(2deg);">
-                    <div class="flex justify-between items-start mb-8">
-                        <div>
-                            <div class="text-white/70 text-xs">Virtual Card</div>
-                            <div class="text-white font-semibold">Ad-Optimizer</div>
+                <div class="flex justify-center mb-6">
+                    <div class="floating-card w-72 h-44 rounded-2xl relative overflow-hidden" style="animation: none;">
+                        <div class="absolute inset-0 p-5 flex flex-col justify-between">
+                            <div class="flex justify-between items-start">
+                                <div class="text-white">
+                                    <div class="text-xs opacity-80 mb-1">osAIfu</div>
+                                    <div class="font-bold text-sm">Ad-Optimizer</div>
+                                </div>
+                                <div class="text-white text-xl font-bold">VISA</div>
+                            </div>
+                            <div class="card-chip w-10 h-6"></div>
+                            <div class="flex justify-between items-end text-white">
+                                <div>
+                                    <div class="text-xs opacity-70">Agent</div>
+                                    <div class="font-mono text-xs">OpenClaw</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xs opacity-70">Limit</div>
+                                    <div class="font-bold">$2,500/mo</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="text-white font-bold text-lg">VISA</div>
-                    </div>
-                    <div class="text-white/60 font-mono text-sm mb-4">•••• •••• •••• 3847</div>
-                    <div class="flex justify-between text-white text-xs">
-                        <div><span class="text-white/50">Agent</span><br>OpenClaw</div>
-                        <div class="text-right"><span class="text-white/50">Limit</span><br>$2,500/mo</div>
                     </div>
                 </div>
                 <p class="text-gray-400 text-sm">
@@ -396,12 +406,7 @@ OSAIFU_CARD_ID=card_xxxxx</code></pre>
             </div>
         </div>
 
-        <div class="text-center mt-10">
-            <a href="dashboard.html" class="inline-flex items-center space-x-3 bg-primary text-white px-8 py-4 rounded-lg hover:bg-blue-600 transition-colors font-semibold text-lg">
-                <span data-jp="デモを試す" data-en="Try Dashboard Demo">Try Dashboard Demo</span>
-                <span>→</span>
-            </a>
-        </div>
+        <!-- removed demo button -->
     </section>
 
     <!-- Safety Section -->
