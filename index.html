@@ -304,28 +304,103 @@ OSAIFU_CARD_ID=card_xxxxx</code></pre>
 
     <!-- Dashboard Preview -->
     <section class="container mx-auto px-6 py-20">
-        <div class="text-center mb-12">
+        <div class="text-center mb-16">
             <h2 class="text-4xl lg:text-5xl font-bold mb-6">
-                <span data-jp="リアルタイム監視ダッシュボード" data-en="Real-time Monitoring Dashboard">Real-time Monitoring Dashboard</span>
+                <span data-jp="すべてを管理" data-en="Full Control at a Glance">Full Control at a Glance</span>
             </h2>
             <p class="text-xl text-gray-300">
-                <span data-jp="すべての取引を監視し、上限超過は自動ブロック" data-en="Monitor all transactions and automatically block limit overruns">Monitor all transactions and automatically block limit overruns</span>
+                <span data-jp="カード発行から取引監視まで、ひとつのダッシュボードで" data-en="From card issuance to transaction monitoring — all in one dashboard">From card issuance to transaction monitoring — all in one dashboard</span>
             </p>
         </div>
 
-        <!-- Dashboard iframe preview -->
-        <div class="max-w-5xl mx-auto rounded-2xl overflow-hidden border border-gray-700/50 shadow-2xl shadow-primary/10" style="height: 500px;">
-            <iframe src="dashboard.html" class="w-full h-full" style="pointer-events: none; transform: scale(1); transform-origin: top left;"></iframe>
+        <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <!-- Card Issuance Preview -->
+            <div class="glass p-6 rounded-2xl">
+                <div class="flex items-center space-x-2 mb-4">
+                    <span class="text-primary">💳</span>
+                    <span class="text-sm font-semibold text-primary">
+                        <span data-jp="カード発行" data-en="Card Issuance">Card Issuance</span>
+                    </span>
+                </div>
+                <div class="bg-gradient-to-r from-primary to-purple-500 rounded-xl p-5 mb-4" style="transform: perspective(800px) rotateY(-3deg) rotateX(2deg);">
+                    <div class="flex justify-between items-start mb-8">
+                        <div>
+                            <div class="text-white/70 text-xs">Virtual Card</div>
+                            <div class="text-white font-semibold">Ad-Optimizer</div>
+                        </div>
+                        <div class="text-white font-bold text-lg">VISA</div>
+                    </div>
+                    <div class="text-white/60 font-mono text-sm mb-4">•••• •••• •••• 3847</div>
+                    <div class="flex justify-between text-white text-xs">
+                        <div><span class="text-white/50">Agent</span><br>OpenClaw</div>
+                        <div class="text-right"><span class="text-white/50">Limit</span><br>$2,500/mo</div>
+                    </div>
+                </div>
+                <p class="text-gray-400 text-sm">
+                    <span data-jp="エージェントごとにカードを発行。上限・カテゴリ制限を設定して、APIキーを渡すだけ。" data-en="Issue cards per agent. Set limits & category restrictions, then hand over the API key.">Issue cards per agent. Set limits & category restrictions, then hand over the API key.</span>
+                </p>
+            </div>
+
+            <!-- Transaction History Preview -->
+            <div class="glass p-6 rounded-2xl">
+                <div class="flex items-center space-x-2 mb-4">
+                    <span class="text-primary">📋</span>
+                    <span class="text-sm font-semibold text-primary">
+                        <span data-jp="取引履歴" data-en="Transaction History">Transaction History</span>
+                    </span>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center p-3 rounded-lg" style="background: rgba(255,255,255,0.03);">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">G</div>
+                            <div>
+                                <div class="text-white text-sm font-medium">Google Ads</div>
+                                <div class="text-gray-500 text-xs">Ad-Optimizer • OpenClaw</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-white font-bold text-sm">$150</div>
+                            <div class="text-green-400 text-xs">Approved ✓</div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center p-3 rounded-lg" style="background: rgba(255,255,255,0.03);">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold">N</div>
+                            <div>
+                                <div class="text-white text-sm font-medium">Notion Pro</div>
+                                <div class="text-gray-500 text-xs">SaaS-Manager • OpenClaw</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-white font-bold text-sm">$24</div>
+                            <div class="text-green-400 text-xs">Approved ✓</div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center p-3 rounded-lg" style="background: rgba(255,255,255,0.03);">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold">?</div>
+                            <div>
+                                <div class="text-white text-sm font-medium">Unknown Merchant</div>
+                                <div class="text-gray-500 text-xs">Data-Crawler • OpenClaw</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-red-400 font-bold text-sm">$890</div>
+                            <div class="text-red-400 text-xs">Blocked ✕</div>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-gray-400 text-sm mt-4">
+                    <span data-jp="どのエージェントが何に使ったか一目瞭然。不審な決済は自動ブロック。" data-en="See exactly which agent spent what. Suspicious payments are automatically blocked.">See exactly which agent spent what. Suspicious payments are automatically blocked.</span>
+                </p>
+            </div>
         </div>
 
-        <div class="text-center mt-8">
-            <a href="dashboard.html" class="inline-flex items-center space-x-3 bg-primary text-white px-8 py-4 rounded-lg hover:bg-blue-600 transition-colors font-semibold text-lg shadow-lg">
+        <div class="text-center mt-10">
+            <a href="dashboard.html" class="inline-flex items-center space-x-3 bg-primary text-white px-8 py-4 rounded-lg hover:bg-blue-600 transition-colors font-semibold text-lg">
                 <span data-jp="デモを試す" data-en="Try Dashboard Demo">Try Dashboard Demo</span>
                 <span>→</span>
             </a>
-            <p class="text-gray-400 text-sm mt-4">
-                <span data-jp="リアルタイムで全ての取引を監視。上限設定、カテゴリ制限、即時凍結。" data-en="Monitor all transactions in real-time. Limit settings, category restrictions, instant freeze.">Monitor all transactions in real-time. Limit settings, category restrictions, instant freeze.</span>
-            </p>
         </div>
     </section>
 
