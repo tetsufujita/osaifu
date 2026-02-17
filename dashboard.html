@@ -8,9 +8,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
+        
         .nav-item { 
             transition: all 0.2s ease;
-            border-radius: 8px;
+            border-radius: 12px;
         }
         .nav-item:hover { 
             background-color: rgba(99, 91, 255, 0.1);
@@ -19,179 +20,152 @@
             background-color: rgba(99, 91, 255, 0.15);
             color: #635BFF;
         }
-        .view-section { 
-            display: none; 
-        }
-        .view-section.active { 
-            display: block; 
-        }
+        
         .progress-bar {
             background: linear-gradient(90deg, #635BFF 0%, #8B7EFF 100%);
         }
+        
+        .card-row {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .card-row:hover {
+            background-color: rgba(99, 91, 255, 0.05);
+            transform: translateY(-1px);
+        }
+        
         .card-visual {
             background: linear-gradient(135deg, #635BFF 0%, #8B7EFF 100%);
-            transform: perspective(800px) rotateX(3deg) rotateY(-1deg);
+            transform: perspective(1000px) rotateX(5deg) rotateY(-2deg);
+            animation: cardFloat 3s ease-in-out infinite;
         }
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
+        
+        @keyframes cardFloat {
+            0%, 100% { transform: perspective(1000px) rotateX(5deg) rotateY(-2deg) translateY(0px); }
+            50% { transform: perspective(1000px) rotateX(5deg) rotateY(-2deg) translateY(-5px); }
         }
-        .status-active { background-color: #10b981; }
-        .status-paused { background-color: #f59e0b; }
-        .status-frozen { background-color: #ef4444; }
-        .lang-btn.active {
-            background-color: #635BFF;
-            color: white;
+        
+        @keyframes cardAppear {
+            0% { 
+                transform: perspective(1000px) rotateX(45deg) rotateY(45deg) scale(0.5);
+                opacity: 0;
+            }
+            100% { 
+                transform: perspective(1000px) rotateX(5deg) rotateY(-2deg) scale(1);
+                opacity: 1;
+            }
         }
-        .badge-approved { background: rgba(16, 185, 129, 0.15); color: #10b981; }
-        .badge-blocked { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
-        .badge-frozen { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
-
-        /* Modal styles */
+        
+        .card-appear {
+            animation: cardAppear 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
         .modal {
             display: none;
             position: fixed;
             inset: 0;
             z-index: 50;
-            background-color: rgba(0, 0, 0, 0.75);
-            animation: fadeIn 0.2s ease-out;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
         }
         .modal.active {
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 1rem;
+            animation: fadeIn 0.3s ease-out;
         }
         
-        /* Step animations */
         .step-content {
             transform: translateX(100%);
             opacity: 0;
-            transition: all 0.3s ease-in-out;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: absolute;
+            inset: 0;
         }
         .step-content.active {
             transform: translateX(0);
             opacity: 1;
+            position: relative;
         }
         .step-content.prev {
             transform: translateX(-100%);
+            opacity: 0;
         }
         
-        /* Success animation */
-        @keyframes checkmark {
-            0% { transform: scale(0) rotate(45deg); }
-            50% { transform: scale(1.2) rotate(45deg); }
-            100% { transform: scale(1) rotate(45deg); }
-        }
-        .checkmark {
-            animation: checkmark 0.6s ease-in-out;
-        }
-        
-        /* Card animation */
-        @keyframes cardAppear {
-            0% { transform: translateY(20px) rotateY(20deg); opacity: 0; }
-            100% { transform: translateY(0) rotateY(0deg); opacity: 1; }
-        }
-        .card-appear {
-            animation: cardAppear 0.8s ease-out;
-        }
-        
-        /* Range slider styles */
         .range-slider {
             -webkit-appearance: none;
             appearance: none;
-            height: 6px;
-            border-radius: 3px;
+            height: 8px;
+            border-radius: 4px;
             background: #374151;
             outline: none;
+            transition: background 0.2s;
         }
         .range-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #635BFF;
-            cursor: pointer;
-            border: 2px solid #fff;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        }
-        .range-slider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #635BFF;
-            cursor: pointer;
-            border: 2px solid #fff;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        }
-        
-        /* Toggle switch */
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 48px;
+            width: 24px;
             height: 24px;
-        }
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #374151;
-            transition: .3s;
-            border-radius: 24px;
-        }
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .3s;
             border-radius: 50%;
+            background: #635BFF;
+            cursor: pointer;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 12px rgba(99, 91, 255, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        input:checked + .toggle-slider {
-            background-color: #635BFF;
-        }
-        input:checked + .toggle-slider:before {
-            transform: translateX(24px);
+        .range-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(99, 91, 255, 0.6);
         }
         
-        /* Inline edit */
         .inline-edit {
             cursor: pointer;
-            padding: 2px 6px;
-            border-radius: 4px;
-            transition: background-color 0.2s;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
         }
         .inline-edit:hover {
             background-color: rgba(99, 91, 255, 0.1);
         }
-        .inline-edit-input {
-            background: transparent;
-            border: 1px solid #635BFF;
-            border-radius: 4px;
-            padding: 2px 6px;
-            width: 100px;
-            color: inherit;
-            font-size: inherit;
-            font-family: inherit;
+        
+        .lang-toggle.active {
+            background-color: #635BFF;
+            color: white;
+        }
+        
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .accordion-content.expanded {
+            max-height: 1000px;
         }
         
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
         }
     </style>
     <script>
@@ -199,1702 +173,1197 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#635BFF'
+                        primary: '#635BFF',
+                        secondary: '#8B7EFF'
                     }
                 }
             }
         }
     </script>
 </head>
-<body class="bg-gray-950 text-white h-full">
+<body class="h-full" style="background-color: #0f0f0f; color: white;">
     <div class="flex h-full">
+        <!-- Mobile menu overlay -->
+        <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-40 lg:hidden hidden" onclick="toggleMobileSidebar()"></div>
+        
         <!-- Sidebar -->
-        <nav class="bg-gray-900 w-64 flex-shrink-0 border-r border-gray-800 flex flex-col">
+        <nav id="sidebar" class="sidebar fixed lg:relative lg:translate-x-0 w-64 h-full z-50 flex-shrink-0 flex flex-col border-r" style="background-color: #1a1a2e; border-color: rgba(99, 91, 255, 0.2);">
             <!-- Logo -->
-            <div class="p-6 border-b border-gray-800">
+            <div class="p-8 border-b" style="border-color: rgba(99, 91, 255, 0.2);">
                 <div class="flex items-center space-x-3">
-                    <span class="text-2xl">👛</span>
-                    <span class="text-xl font-semibold">osAIfu</span>
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-xl">
+                        👛
+                    </div>
+                    <span class="text-2xl font-bold">osAIfu</span>
                 </div>
             </div>
             
             <!-- Navigation -->
-            <nav class="flex-1 p-4">
-                <ul class="space-y-1">
+            <nav class="flex-1 p-6">
+                <ul class="space-y-2">
                     <li>
-                        <a href="#" onclick="showView('overview')" class="nav-item active flex items-center space-x-3 px-3 py-2.5 text-sm font-medium">
-                            <span>📊</span>
-                            <span data-i18n="overview">概要</span>
+                        <a href="#" onclick="showView('home')" class="nav-item active flex items-center space-x-4 px-4 py-3 text-sm font-medium rounded-xl">
+                            <span class="text-xl">🏠</span>
+                            <span data-i18n="home">ホーム</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" onclick="showView('transactions')" class="nav-item flex items-center space-x-3 px-3 py-2.5 text-sm font-medium">
-                            <span>📋</span>
+                        <button onclick="openCardIssuanceModal()" class="nav-item w-full flex items-center space-x-4 px-4 py-3 text-sm font-medium rounded-xl text-left">
+                            <span class="text-xl">➕</span>
+                            <span data-i18n="issue_card">カード発行</span>
+                        </button>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showView('transactions')" class="nav-item flex items-center space-x-4 px-4 py-3 text-sm font-medium rounded-xl">
+                            <span class="text-xl">📋</span>
                             <span data-i18n="transactions">取引履歴</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" onclick="showView('cards')" class="nav-item flex items-center space-x-3 px-3 py-2.5 text-sm font-medium">
-                            <span>💳</span>
-                            <span data-i18n="cards">カード管理</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" onclick="showView('policies')" class="nav-item flex items-center space-x-3 px-3 py-2.5 text-sm font-medium">
-                            <span>🛡️</span>
-                            <span data-i18n="policies">ポリシー</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" onclick="showView('api')" class="nav-item flex items-center space-x-3 px-3 py-2.5 text-sm font-medium">
-                            <span>⚡</span>
-                            <span data-i18n="api">API</span>
+                        <a href="#" onclick="showView('settings')" class="nav-item flex items-center space-x-4 px-4 py-3 text-sm font-medium rounded-xl">
+                            <span class="text-xl">⚙️</span>
+                            <span data-i18n="settings">設定</span>
                         </a>
                     </li>
                 </ul>
             </nav>
-            
-            <!-- User Account -->
-            <div class="p-4 border-t border-gray-800">
-                <div class="flex items-center space-x-3">
-                    <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-sm font-semibold">U</div>
-                    <div>
-                        <div class="text-sm font-medium">User Account</div>
-                        <div class="text-xs text-gray-400">Pro Plan</div>
-                    </div>
-                </div>
-            </div>
         </nav>
 
         <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto">
+        <main class="flex-1 overflow-hidden flex flex-col">
             <!-- Header -->
-            <header class="bg-gray-950 border-b border-gray-800 px-6 py-4">
+            <header class="px-8 py-6 border-b" style="border-color: rgba(99, 91, 255, 0.2);">
                 <div class="flex items-center justify-between">
-                    <div>
-                        <h1 id="page-title" class="text-xl font-semibold" data-i18n="overview">概要</h1>
-                        <p id="page-subtitle" class="text-sm text-gray-400" data-i18n="overview_subtitle">AI エージェントの財務活動を監視</p>
-                    </div>
                     <div class="flex items-center space-x-4">
-                        <!-- Language Toggle -->
-                        <div class="flex items-center bg-gray-800 rounded-lg p-1">
-                            <button id="lang-jp" class="lang-btn px-3 py-1.5 rounded-md text-sm font-medium transition-colors active" onclick="switchLanguage('jp')">JP</button>
-                            <button id="lang-en" class="lang-btn px-3 py-1.5 rounded-md text-sm font-medium transition-colors text-gray-400" onclick="switchLanguage('en')">EN</button>
+                        <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 hover:bg-gray-800 rounded-lg transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                        </button>
+                        <div>
+                            <h1 id="page-title" class="text-2xl font-bold" data-i18n="home">ホーム</h1>
+                            <p id="page-subtitle" class="text-gray-400 mt-1" data-i18n="home_subtitle">AIエージェントのカードを管理</p>
                         </div>
+                    </div>
+                    
+                    <!-- Language Toggle -->
+                    <div class="flex items-center bg-gray-800/50 rounded-xl p-1">
+                        <button id="lang-jp" class="lang-toggle px-4 py-2 rounded-lg text-sm font-medium transition-all active" onclick="switchLanguage('jp')">JP</button>
+                        <button id="lang-en" class="lang-toggle px-4 py-2 rounded-lg text-sm font-medium transition-all text-gray-400" onclick="switchLanguage('en')">EN</button>
                     </div>
                 </div>
             </header>
 
-            <div class="p-6 max-w-7xl mx-auto">
-                <!-- Overview Section -->
-                <section id="overview-view" class="view-section active">
-                    <!-- Key Metrics -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
-                        <!-- Monthly Spend -->
-                        <div class="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <div>
-                                    <p class="text-sm text-gray-400" data-i18n="monthly_spend">今月の利用額</p>
-                                    <p class="text-2xl font-semibold">¥746,500</p>
-                                    <p class="text-sm text-gray-400">$5,120 USD</p>
-                                </div>
-                                <div class="text-3xl">💰</div>
-                            </div>
-                            <div class="mt-4">
-                                <div class="flex justify-between text-sm mb-2">
-                                    <span class="text-gray-400" data-i18n="budget_usage">予算使用率</span>
-                                    <span>74%</span>
-                                </div>
-                                <div class="w-full bg-gray-800 rounded-full h-2">
-                                    <div class="progress-bar h-2 rounded-full" style="width: 74%"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Active Agents -->
-                        <div class="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <div>
-                                    <p class="text-sm text-gray-400" data-i18n="active_agents">アクティブエージェント</p>
-                                    <p class="text-2xl font-semibold" id="agent-count">4</p>
-                                    <p class="text-sm text-green-400" data-i18n="all_operational">すべて稼働中</p>
-                                </div>
-                                <div class="text-3xl">🤖</div>
-                            </div>
-                            <div class="mt-4">
-                                <button onclick="openAgentCreationModal()" class="w-full bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium" data-i18n="add_agent">
-                                    + エージェント追加
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Agent List -->
-                    <div class="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold mb-6" data-i18n="agents_list">エージェント一覧</h3>
-                        <div id="agents-container" class="space-y-4">
-                            <!-- Agent 1 -->
-                            <div class="flex items-center justify-between py-4 border-b border-gray-800 last:border-b-0">
-                                <div class="flex items-center space-x-4">
-                                    <div class="status-dot status-active"></div>
+            <!-- Content Area -->
+            <div class="flex-1 overflow-y-auto">
+                <div class="p-8 max-w-7xl mx-auto">
+                    <!-- Home Section -->
+                    <section id="home-view" class="view-section active">
+                        <!-- KPIs -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                            <!-- Monthly Spend -->
+                            <div class="bg-gray-900/30 border border-gray-800/50 rounded-2xl p-8 hover:border-primary/30 transition-all slide-up">
+                                <div class="flex items-center justify-between">
                                     <div>
-                                        <h4 class="font-medium">Ad-Optimizer</h4>
-                                        <p class="text-sm text-gray-400">Marketing Team</p>
+                                        <p class="text-gray-400 text-sm font-medium mb-2" data-i18n="monthly_spend">今月の利用額</p>
+                                        <p class="text-4xl font-bold mb-1">¥746,500</p>
+                                        <p class="text-gray-500 text-sm">$5,120 USD</p>
                                     </div>
-                                </div>
-                                <div class="flex items-center space-x-6">
-                                    <div class="w-32">
-                                        <div class="flex justify-between text-sm mb-1">
-                                            <span class="text-gray-400">利用額</span>
-                                            <span><span class="inline-edit" data-current="320000" data-max="400000" onclick="enableInlineEdit(this)">¥320K</span> / ¥400K</span>
-                                        </div>
-                                        <div class="w-full bg-gray-800 rounded-full h-1.5">
-                                            <div class="progress-bar h-1.5 rounded-full" style="width: 80%"></div>
-                                        </div>
-                                    </div>
-                                    <span class="badge-approved px-3 py-1 rounded-full text-xs font-medium" data-i18n="active">有効</span>
+                                    <div class="text-5xl opacity-80">💰</div>
                                 </div>
                             </div>
 
-                            <!-- Agent 2 -->
-                            <div class="flex items-center justify-between py-4 border-b border-gray-800 last:border-b-0">
-                                <div class="flex items-center space-x-4">
-                                    <div class="status-dot status-active"></div>
+                            <!-- Active Cards -->
+                            <div class="bg-gray-900/30 border border-gray-800/50 rounded-2xl p-8 hover:border-primary/30 transition-all slide-up" style="animation-delay: 0.1s;">
+                                <div class="flex items-center justify-between">
                                     <div>
-                                        <h4 class="font-medium">Data-Crawler</h4>
-                                        <p class="text-sm text-gray-400">Data Team</p>
+                                        <p class="text-gray-400 text-sm font-medium mb-2" data-i18n="issued_cards">発行カード数</p>
+                                        <p class="text-4xl font-bold mb-1" id="card-count">4</p>
+                                        <p class="text-green-400 text-sm font-medium" data-i18n="all_active">すべて有効</p>
                                     </div>
-                                </div>
-                                <div class="flex items-center space-x-6">
-                                    <div class="w-32">
-                                        <div class="flex justify-between text-sm mb-1">
-                                            <span class="text-gray-400">利用額</span>
-                                            <span><span class="inline-edit" data-current="186000" data-max="300000" onclick="enableInlineEdit(this)">¥186K</span> / ¥300K</span>
-                                        </div>
-                                        <div class="w-full bg-gray-800 rounded-full h-1.5">
-                                            <div class="progress-bar h-1.5 rounded-full" style="width: 62%"></div>
-                                        </div>
-                                    </div>
-                                    <span class="badge-approved px-3 py-1 rounded-full text-xs font-medium" data-i18n="active">有効</span>
-                                </div>
-                            </div>
-
-                            <!-- Agent 3 -->
-                            <div class="flex items-center justify-between py-4 border-b border-gray-800 last:border-b-0">
-                                <div class="flex items-center space-x-4">
-                                    <div class="status-dot status-active"></div>
-                                    <div>
-                                        <h4 class="font-medium">SaaS-Manager</h4>
-                                        <p class="text-sm text-gray-400">IT Team</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center space-x-6">
-                                    <div class="w-32">
-                                        <div class="flex justify-between text-sm mb-1">
-                                            <span class="text-gray-400">利用額</span>
-                                            <span><span class="inline-edit" data-current="143000" data-max="200000" onclick="enableInlineEdit(this)">¥143K</span> / ¥200K</span>
-                                        </div>
-                                        <div class="w-full bg-gray-800 rounded-full h-1.5">
-                                            <div class="progress-bar h-1.5 rounded-full" style="width: 71%"></div>
-                                        </div>
-                                    </div>
-                                    <span class="badge-approved px-3 py-1 rounded-full text-xs font-medium" data-i18n="active">有効</span>
-                                </div>
-                            </div>
-
-                            <!-- Agent 4 -->
-                            <div class="flex items-center justify-between py-4">
-                                <div class="flex items-center space-x-4">
-                                    <div class="status-dot status-paused"></div>
-                                    <div>
-                                        <h4 class="font-medium">Code-Assistant</h4>
-                                        <p class="text-sm text-gray-400">Engineering Team</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center space-x-6">
-                                    <div class="w-32">
-                                        <div class="flex justify-between text-sm mb-1">
-                                            <span class="text-gray-400">利用額</span>
-                                            <span><span class="inline-edit" data-current="98000" data-max="200000" onclick="enableInlineEdit(this)">¥98K</span> / ¥200K</span>
-                                        </div>
-                                        <div class="w-full bg-gray-800 rounded-full h-1.5">
-                                            <div class="progress-bar h-1.5 rounded-full" style="width: 49%"></div>
-                                        </div>
-                                    </div>
-                                    <span class="badge-frozen px-3 py-1 rounded-full text-xs font-medium" data-i18n="paused">一時停止</span>
+                                    <div class="text-5xl opacity-80">💳</div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </section>
 
-                <!-- Transactions Section -->
-                <section id="transactions-view" class="view-section">
-                    <div class="mb-6">
-                        <h2 class="text-xl font-semibold" data-i18n="transactions">取引履歴</h2>
-                        <p class="text-sm text-gray-400" data-i18n="transactions_subtitle">すべての取引を表示</p>
-                    </div>
-
-                    <!-- Filters -->
-                    <div class="bg-gray-900/50 border border-gray-800 rounded-xl p-4 mb-6">
-                        <div class="flex flex-wrap gap-4">
-                            <input type="text" data-i18n-placeholder="search_transactions" placeholder="取引を検索..." class="flex-1 min-w-64 bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-primary text-sm">
-                            <select class="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-primary text-sm">
-                                <option data-i18n="all_agents">全エージェント</option>
-                                <option>Ad-Optimizer</option>
-                                <option>Data-Crawler</option>
-                                <option>SaaS-Manager</option>
-                                <option>Code-Assistant</option>
-                            </select>
-                            <select class="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-primary text-sm">
-                                <option data-i18n="last_30_days">過去30日</option>
-                                <option data-i18n="last_7_days">過去7日</option>
-                                <option data-i18n="today">今日</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Transactions Table -->
-                    <div class="bg-gray-900/50 border border-gray-800 rounded-xl overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full">
-                                <thead class="bg-gray-800/50">
-                                    <tr>
-                                        <th class="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider" data-i18n="agent">エージェント</th>
-                                        <th class="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider" data-i18n="merchant">加盟店</th>
-                                        <th class="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider" data-i18n="amount">金額</th>
-                                        <th class="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider" data-i18n="status">ステータス</th>
-                                        <th class="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider" data-i18n="time">時間</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-800">
-                                    <tr class="hover:bg-gray-800/30">
-                                        <td class="py-3 px-4 text-sm">Ad-Optimizer</td>
-                                        <td class="py-3 px-4 text-sm">Google Ads</td>
-                                        <td class="py-3 px-4 text-sm font-mono">¥45,000</td>
-                                        <td class="py-3 px-4"><span class="badge-approved px-2 py-1 rounded-full text-xs" data-i18n="approved">承認済み</span></td>
-                                        <td class="py-3 px-4 text-sm text-gray-400" data-i18n="time_2h_ago">2時間前</td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-800/30">
-                                        <td class="py-3 px-4 text-sm">SaaS-Manager</td>
-                                        <td class="py-3 px-4 text-sm">Notion API</td>
-                                        <td class="py-3 px-4 text-sm font-mono">¥3,200</td>
-                                        <td class="py-3 px-4"><span class="badge-approved px-2 py-1 rounded-full text-xs" data-i18n="approved">承認済み</span></td>
-                                        <td class="py-3 px-4 text-sm text-gray-400" data-i18n="time_4h_ago">4時間前</td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-800/30">
-                                        <td class="py-3 px-4 text-sm">Data-Crawler</td>
-                                        <td class="py-3 px-4 text-sm" data-i18n="unknown_merchant">不明な加盟店</td>
-                                        <td class="py-3 px-4 text-sm font-mono">¥89,000</td>
-                                        <td class="py-3 px-4"><span class="badge-blocked px-2 py-1 rounded-full text-xs" data-i18n="blocked">ブロック</span></td>
-                                        <td class="py-3 px-4 text-sm text-gray-400" data-i18n="time_6h_ago">6時間前</td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-800/30">
-                                        <td class="py-3 px-4 text-sm">Code-Assistant</td>
-                                        <td class="py-3 px-4 text-sm">AWS Lambda</td>
-                                        <td class="py-3 px-4 text-sm font-mono">¥12,800</td>
-                                        <td class="py-3 px-4"><span class="badge-approved px-2 py-1 rounded-full text-xs" data-i18n="approved">承認済み</span></td>
-                                        <td class="py-3 px-4 text-sm text-gray-400" data-i18n="time_8h_ago">8時間前</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Cards Section -->
-                <section id="cards-view" class="view-section">
-                    <div class="mb-6">
-                        <h2 class="text-xl font-semibold" data-i18n="cards">カード管理</h2>
-                        <p class="text-sm text-gray-400" data-i18n="cards_subtitle">バーチャルカードを管理</p>
-                    </div>
-
-                    <div class="grid lg:grid-cols-2 gap-8 mb-8">
-                        <!-- Card Visual -->
-                        <div>
-                            <div class="card-visual w-full max-w-sm h-48 rounded-2xl relative overflow-hidden shadow-2xl">
-                                <div class="absolute inset-0 p-6 flex flex-col justify-between">
-                                    <div class="flex justify-between items-start">
-                                        <div class="text-white">
-                                            <div class="text-sm opacity-80">Virtual Card</div>
-                                            <div class="font-semibold">Ad-Optimizer</div>
+                        <!-- Card List -->
+                        <div class="bg-gray-900/30 border border-gray-800/50 rounded-2xl overflow-hidden slide-up" style="animation-delay: 0.2s;">
+                            <div class="p-8 border-b border-gray-800/50">
+                                <div class="flex items-center justify-between">
+                                    <h2 class="text-2xl font-bold" data-i18n="card_list">カード一覧</h2>
+                                    <button onclick="openCardIssuanceModal()" class="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-medium transition-all transform hover:scale-105" data-i18n="new_card">
+                                        ➕ 新しいカードを発行
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div id="cards-container" class="divide-y divide-gray-800/50">
+                                <!-- Card 1 -->
+                                <div class="card-row p-8" onclick="toggleCardDetails(this)">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-6">
+                                            <div class="w-12 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                                                CARD
+                                            </div>
+                                            <div>
+                                                <h3 class="text-lg font-semibold mb-1">広告運用カード</h3>
+                                                <p class="text-gray-400 text-sm">Ad-Optimizer (OpenClaw)</p>
+                                            </div>
                                         </div>
-                                        <div class="text-white text-xl font-bold">VISA</div>
+                                        <div class="flex items-center space-x-8">
+                                            <div class="text-right">
+                                                <p class="font-mono text-lg font-bold"><span class="inline-edit" data-current="320000" data-max="400000" onclick="enableInlineEdit(event, this)">¥320,000</span> / ¥400,000</p>
+                                                <div class="w-48 bg-gray-800 rounded-full h-2 mt-2">
+                                                    <div class="progress-bar h-2 rounded-full" style="width: 80%"></div>
+                                                </div>
+                                            </div>
+                                            <span class="px-4 py-2 bg-green-900/30 text-green-400 rounded-full text-sm font-medium">🟢 <span data-i18n="active">有効</span></span>
+                                            <svg class="w-5 h-5 text-gray-400 transition-transform expand-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                            </svg>
+                                        </div>
                                     </div>
-                                    <div class="flex justify-between items-end text-white">
+                                    <div class="accordion-content mt-8">
+                                        <div class="bg-gray-800/30 rounded-xl p-6 grid md:grid-cols-2 gap-6">
+                                            <div class="space-y-4">
+                                                <h4 class="font-semibold text-primary" data-i18n="card_details">カード詳細</h4>
+                                                <div class="space-y-2 text-sm">
+                                                    <div class="flex justify-between">
+                                                        <span class="text-gray-400">API Key:</span>
+                                                        <span class="font-mono text-xs">osaifu_live_****1234</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-gray-400" data-i18n="currency">通貨:</span>
+                                                        <span>JPY</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-gray-400" data-i18n="created">作成日:</span>
+                                                        <span>2024-02-15</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="space-y-4">
+                                                <h4 class="font-semibold text-primary" data-i18n="usage_rules">利用ルール</h4>
+                                                <div class="space-y-2 text-sm">
+                                                    <div class="flex justify-between">
+                                                        <span class="text-gray-400" data-i18n="per_transaction">1回上限:</span>
+                                                        <span>¥50,000</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-gray-400" data-i18n="categories">カテゴリ:</span>
+                                                        <span class="text-xs">広告, クラウド</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-gray-400" data-i18n="approval_limit">承認必要:</span>
+                                                        <span>¥50,000+</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Card 2 -->
+                                <div class="card-row p-8" onclick="toggleCardDetails(this)">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-6">
+                                            <div class="w-12 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                                                CARD
+                                            </div>
+                                            <div>
+                                                <h3 class="text-lg font-semibold mb-1">SaaS決済カード</h3>
+                                                <p class="text-gray-400 text-sm">SaaS-Manager (OpenClaw)</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-8">
+                                            <div class="text-right">
+                                                <p class="font-mono text-lg font-bold"><span class="inline-edit" data-current="142800" data-max="200000" onclick="enableInlineEdit(event, this)">¥142,800</span> / ¥200,000</p>
+                                                <div class="w-48 bg-gray-800 rounded-full h-2 mt-2">
+                                                    <div class="progress-bar h-2 rounded-full" style="width: 71%"></div>
+                                                </div>
+                                            </div>
+                                            <span class="px-4 py-2 bg-green-900/30 text-green-400 rounded-full text-sm font-medium">🟢 <span data-i18n="active">有効</span></span>
+                                            <svg class="w-5 h-5 text-gray-400 transition-transform expand-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Card 3 -->
+                                <div class="card-row p-8" onclick="toggleCardDetails(this)">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-6">
+                                            <div class="w-12 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                                                CARD
+                                            </div>
+                                            <div>
+                                                <h3 class="text-lg font-semibold mb-1">データ分析カード</h3>
+                                                <p class="text-gray-400 text-sm">Data-Crawler (OpenClaw)</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-8">
+                                            <div class="text-right">
+                                                <p class="font-mono text-lg font-bold"><span class="inline-edit" data-current="180200" data-max="300000" onclick="enableInlineEdit(event, this)">¥180,200</span> / ¥300,000</p>
+                                                <div class="w-48 bg-gray-800 rounded-full h-2 mt-2">
+                                                    <div class="progress-bar h-2 rounded-full" style="width: 60%"></div>
+                                                </div>
+                                            </div>
+                                            <span class="px-4 py-2 bg-green-900/30 text-green-400 rounded-full text-sm font-medium">🟢 <span data-i18n="active">有効</span></span>
+                                            <svg class="w-5 h-5 text-gray-400 transition-transform expand-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Card 4 -->
+                                <div class="card-row p-8" onclick="toggleCardDetails(this)">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-6">
+                                            <div class="w-12 h-8 bg-gradient-to-r from-gray-600 to-gray-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                                                CARD
+                                            </div>
+                                            <div>
+                                                <h3 class="text-lg font-semibold mb-1 text-gray-400">開発支援カード</h3>
+                                                <p class="text-gray-500 text-sm">Code-Assistant (OpenClaw)</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-8">
+                                            <div class="text-right">
+                                                <p class="font-mono text-lg font-bold text-gray-400"><span class="inline-edit" data-current="103500" data-max="200000" onclick="enableInlineEdit(event, this)">¥103,500</span> / ¥200,000</p>
+                                                <div class="w-48 bg-gray-800 rounded-full h-2 mt-2">
+                                                    <div class="bg-gray-600 h-2 rounded-full" style="width: 52%"></div>
+                                                </div>
+                                            </div>
+                                            <span class="px-4 py-2 bg-gray-800/30 text-gray-400 rounded-full text-sm font-medium">⏸️ <span data-i18n="paused">一時停止</span></span>
+                                            <svg class="w-5 h-5 text-gray-400 transition-transform expand-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Transactions Section -->
+                    <section id="transactions-view" class="view-section" style="display: none;">
+                        <div class="mb-8">
+                            <!-- Filters -->
+                            <div class="bg-gray-900/30 border border-gray-800/50 rounded-2xl p-6 mb-8">
+                                <div class="grid md:grid-cols-3 gap-4">
+                                    <select class="bg-gray-800/50 text-white px-4 py-3 rounded-xl border border-gray-700/50 focus:outline-none focus:border-primary">
+                                        <option data-i18n="all_cards">すべてのカード</option>
+                                        <option>広告運用カード</option>
+                                        <option>SaaS決済カード</option>
+                                        <option>データ分析カード</option>
+                                        <option>開発支援カード</option>
+                                    </select>
+                                    <select class="bg-gray-800/50 text-white px-4 py-3 rounded-xl border border-gray-700/50 focus:outline-none focus:border-primary">
+                                        <option data-i18n="all_status">すべてのステータス</option>
+                                        <option data-i18n="approved">承認</option>
+                                        <option data-i18n="blocked">ブロック</option>
+                                    </select>
+                                    <select class="bg-gray-800/50 text-white px-4 py-3 rounded-xl border border-gray-700/50 focus:outline-none focus:border-primary">
+                                        <option data-i18n="last_30_days">過去30日</option>
+                                        <option data-i18n="last_7_days">過去7日</option>
+                                        <option data-i18n="today">今日</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Transactions Table -->
+                            <div class="bg-gray-900/30 border border-gray-800/50 rounded-2xl overflow-hidden">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full">
+                                        <thead style="background-color: rgba(26, 26, 46, 0.5);">
+                                            <tr>
+                                                <th class="text-left py-6 px-8 text-sm font-semibold text-gray-300" data-i18n="datetime">日時</th>
+                                                <th class="text-left py-6 px-8 text-sm font-semibold text-gray-300" data-i18n="card_name">カード名</th>
+                                                <th class="text-left py-6 px-8 text-sm font-semibold text-gray-300" data-i18n="merchant">加盟店</th>
+                                                <th class="text-left py-6 px-8 text-sm font-semibold text-gray-300" data-i18n="amount">金額</th>
+                                                <th class="text-left py-6 px-8 text-sm font-semibold text-gray-300" data-i18n="status">ステータス</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-800/30">
+                                            <tr class="hover:bg-gray-800/20 transition-colors">
+                                                <td class="py-6 px-8 text-sm text-gray-300">2024-02-17 09:30</td>
+                                                <td class="py-6 px-8 text-sm font-medium">広告運用カード</td>
+                                                <td class="py-6 px-8 text-sm">Google Ads</td>
+                                                <td class="py-6 px-8 text-sm font-mono text-lg font-bold">¥45,000</td>
+                                                <td class="py-6 px-8">
+                                                    <span class="px-3 py-1 bg-green-900/30 text-green-400 rounded-full text-xs font-medium" data-i18n="approved">承認</span>
+                                                </td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-800/20 transition-colors">
+                                                <td class="py-6 px-8 text-sm text-gray-300">2024-02-17 07:15</td>
+                                                <td class="py-6 px-8 text-sm font-medium">SaaS決済カード</td>
+                                                <td class="py-6 px-8 text-sm">Notion</td>
+                                                <td class="py-6 px-8 text-sm font-mono text-lg font-bold">¥3,200</td>
+                                                <td class="py-6 px-8">
+                                                    <span class="px-3 py-1 bg-green-900/30 text-green-400 rounded-full text-xs font-medium" data-i18n="approved">承認</span>
+                                                </td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-800/20 transition-colors">
+                                                <td class="py-6 px-8 text-sm text-gray-300">2024-02-17 02:45</td>
+                                                <td class="py-6 px-8 text-sm font-medium">データ分析カード</td>
+                                                <td class="py-6 px-8 text-sm text-gray-500">不明な加盟店</td>
+                                                <td class="py-6 px-8 text-sm font-mono text-lg font-bold text-red-400">¥89,000</td>
+                                                <td class="py-6 px-8">
+                                                    <span class="px-3 py-1 bg-red-900/30 text-red-400 rounded-full text-xs font-medium" data-i18n="blocked">ブロック</span>
+                                                </td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-800/20 transition-colors">
+                                                <td class="py-6 px-8 text-sm text-gray-300">2024-02-16 18:20</td>
+                                                <td class="py-6 px-8 text-sm font-medium">広告運用カード</td>
+                                                <td class="py-6 px-8 text-sm">Facebook Ads</td>
+                                                <td class="py-6 px-8 text-sm font-mono text-lg font-bold">¥28,500</td>
+                                                <td class="py-6 px-8">
+                                                    <span class="px-3 py-1 bg-green-900/30 text-green-400 rounded-full text-xs font-medium" data-i18n="approved">承認</span>
+                                                </td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-800/20 transition-colors">
+                                                <td class="py-6 px-8 text-sm text-gray-300">2024-02-16 14:35</td>
+                                                <td class="py-6 px-8 text-sm font-medium">SaaS決済カード</td>
+                                                <td class="py-6 px-8 text-sm">AWS</td>
+                                                <td class="py-6 px-8 text-sm font-mono text-lg font-bold">¥12,800</td>
+                                                <td class="py-6 px-8">
+                                                    <span class="px-3 py-1 bg-green-900/30 text-green-400 rounded-full text-xs font-medium" data-i18n="approved">承認</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Settings Section -->
+                    <section id="settings-view" class="view-section" style="display: none;">
+                        <div class="space-y-8">
+                            <!-- Notifications -->
+                            <div class="bg-gray-900/30 border border-gray-800/50 rounded-2xl p-8">
+                                <h2 class="text-xl font-bold mb-6" data-i18n="notifications">通知設定</h2>
+                                <div class="space-y-6">
+                                    <div class="flex items-center justify-between py-4 border-b border-gray-800/30">
                                         <div>
-                                            <div class="text-xs opacity-80">Agent ID</div>
-                                            <div class="font-mono text-sm">AD-OPT-001</div>
+                                            <h3 class="font-semibold" data-i18n="email_notifications">メール通知</h3>
+                                            <p class="text-gray-400 text-sm" data-i18n="email_desc">取引の承認/ブロック時にメールを受信</p>
                                         </div>
-                                        <div class="text-right">
-                                            <div class="text-xs opacity-80">Monthly Limit</div>
-                                            <div class="font-semibold">¥400,000</div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" class="sr-only peer" checked>
+                                            <div class="w-14 h-7 bg-gray-600 rounded-full peer peer-checked:bg-primary peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all"></div>
+                                        </label>
+                                    </div>
+                                    <div class="flex items-center justify-between py-4 border-b border-gray-800/30">
+                                        <div>
+                                            <h3 class="font-semibold" data-i18n="slack_notifications">Slack通知</h3>
+                                            <p class="text-gray-400 text-sm" data-i18n="slack_desc">Slackチャンネルに通知を送信</p>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" class="sr-only peer">
+                                            <div class="w-14 h-7 bg-gray-600 rounded-full peer peer-checked:bg-primary peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all"></div>
+                                        </label>
+                                    </div>
+                                    <div class="py-4">
+                                        <label class="block text-sm font-semibold text-gray-300 mb-3" data-i18n="slack_webhook">Slack Webhook URL</label>
+                                        <input type="url" placeholder="https://hooks.slack.com/services/..." class="w-full bg-gray-800/50 text-white px-4 py-3 rounded-xl border border-gray-700/50 focus:outline-none focus:border-primary">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- API Keys -->
+                            <div class="bg-gray-900/30 border border-gray-800/50 rounded-2xl p-8">
+                                <div class="flex items-center justify-between mb-6">
+                                    <h2 class="text-xl font-bold" data-i18n="api_keys">APIキー一覧</h2>
+                                    <button class="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-medium transition-all" data-i18n="generate_new_key">
+                                        ➕ 新しいキーを生成
+                                    </button>
+                                </div>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between p-6 bg-gray-800/30 rounded-xl">
+                                        <div>
+                                            <div class="font-mono text-sm mb-1">osaifu_live_••••••••••••••••••••••••••••••••••••1234</div>
+                                            <div class="text-xs text-gray-400">広告運用カード • 作成: 2024-02-15 • 最終使用: 2時間前</div>
+                                        </div>
+                                        <div class="flex space-x-3">
+                                            <button class="text-primary hover:text-primary/80 text-sm font-medium" data-i18n="copy">コピー</button>
+                                            <button class="text-primary hover:text-primary/80 text-sm font-medium" data-i18n="regenerate">再生成</button>
+                                            <button class="text-red-400 hover:text-red-300 text-sm font-medium" data-i18n="delete">削除</button>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between p-6 bg-gray-800/30 rounded-xl">
+                                        <div>
+                                            <div class="font-mono text-sm mb-1">osaifu_live_••••••••••••••••••••••••••••••••••••5678</div>
+                                            <div class="text-xs text-gray-400">SaaS決済カード • 作成: 2024-02-15 • 最終使用: 4時間前</div>
+                                        </div>
+                                        <div class="flex space-x-3">
+                                            <button class="text-primary hover:text-primary/80 text-sm font-medium" data-i18n="copy">コピー</button>
+                                            <button class="text-primary hover:text-primary/80 text-sm font-medium" data-i18n="regenerate">再生成</button>
+                                            <button class="text-red-400 hover:text-red-300 text-sm font-medium" data-i18n="delete">削除</button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Card Details -->
-                        <div class="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-lg font-semibold" data-i18n="card_details">カード詳細</h3>
-                                <button onclick="openCardIssuanceModal('Ad-Optimizer')" class="bg-primary text-white px-3 py-1.5 rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium" data-i18n="add_card">
-                                    + カード追加
-                                </button>
-                            </div>
-                            <div class="space-y-3 text-sm">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-400" data-i18n="card_number">カード番号</span>
-                                    <span class="font-mono">**** **** **** 3847</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-400" data-i18n="status">ステータス</span>
-                                    <span class="text-green-400" data-i18n="active">有効</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-400" data-i18n="monthly_spend">月間利用額</span>
-                                    <span>¥320,000 / ¥400,000</span>
-                                </div>
-                            </div>
-                            <div class="pt-4 space-y-2">
-                                <button class="w-full bg-primary text-white py-2 rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium" data-i18n="view_details">
-                                    詳細表示
-                                </button>
-                                <button class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium" data-i18n="freeze_card">
-                                    カード凍結
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Cards List -->
-                    <div class="bg-gray-900/50 border border-gray-800 rounded-xl overflow-hidden">
-                        <div class="p-6 border-b border-gray-800">
-                            <h3 class="text-lg font-semibold" data-i18n="all_cards">全カード</h3>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full">
-                                <thead class="bg-gray-800/50">
-                                    <tr>
-                                        <th class="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider" data-i18n="agent">エージェント</th>
-                                        <th class="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider" data-i18n="card_number">カード番号</th>
-                                        <th class="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider" data-i18n="usage">利用状況</th>
-                                        <th class="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider" data-i18n="status">ステータス</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-800">
-                                    <tr class="hover:bg-gray-800/30">
-                                        <td class="py-3 px-4 text-sm">Ad-Optimizer</td>
-                                        <td class="py-3 px-4 text-sm font-mono">**** 3847</td>
-                                        <td class="py-3 px-4 text-sm">¥320K / ¥400K</td>
-                                        <td class="py-3 px-4"><span class="badge-approved px-2 py-1 rounded-full text-xs" data-i18n="active">有効</span></td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-800/30">
-                                        <td class="py-3 px-4 text-sm">Data-Crawler</td>
-                                        <td class="py-3 px-4 text-sm font-mono">**** 1294</td>
-                                        <td class="py-3 px-4 text-sm">¥186K / ¥300K</td>
-                                        <td class="py-3 px-4"><span class="badge-approved px-2 py-1 rounded-full text-xs" data-i18n="active">有効</span></td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-800/30">
-                                        <td class="py-3 px-4 text-sm">SaaS-Manager</td>
-                                        <td class="py-3 px-4 text-sm font-mono">**** 7561</td>
-                                        <td class="py-3 px-4 text-sm">¥143K / ¥200K</td>
-                                        <td class="py-3 px-4"><span class="badge-approved px-2 py-1 rounded-full text-xs" data-i18n="active">有効</span></td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-800/30">
-                                        <td class="py-3 px-4 text-sm">Code-Assistant</td>
-                                        <td class="py-3 px-4 text-sm font-mono">**** 8392</td>
-                                        <td class="py-3 px-4 text-sm">¥98K / ¥200K</td>
-                                        <td class="py-3 px-4"><span class="badge-frozen px-2 py-1 rounded-full text-xs" data-i18n="paused">一時停止</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Policies Section -->
-                <section id="policies-view" class="view-section">
-                    <div class="mb-6">
-                        <h2 class="text-xl font-semibold" data-i18n="policies">ポリシー</h2>
-                        <p class="text-sm text-gray-400" data-i18n="policies_subtitle">支出ルールを設定</p>
-                    </div>
-
-                    <div class="grid gap-6">
-                        <!-- Spending Limits -->
-                        <div class="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-lg font-semibold" data-i18n="spending_limits">支出上限</h3>
-                                <button class="text-primary hover:text-primary/80 text-sm font-medium" data-i18n="edit">編集</button>
-                            </div>
-                            <div class="grid md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-300 mb-2" data-i18n="monthly_limit">月間上限</label>
-                                    <input type="text" value="¥1,200,000" class="w-full bg-gray-800 text-white px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-primary text-sm">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-300 mb-2" data-i18n="transaction_limit">取引上限</label>
-                                    <input type="text" value="¥50,000" class="w-full bg-gray-800 text-white px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-primary text-sm">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Approval Rules -->
-                        <div class="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-lg font-semibold" data-i18n="approval_rules">承認ルール</h3>
-                                <button class="text-primary hover:text-primary/80 text-sm font-medium" data-i18n="edit">編集</button>
-                            </div>
-                            <div class="space-y-4">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm" data-i18n="auto_approve_under">自動承認上限</span>
-                                    <span class="text-sm font-mono">¥10,000</span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm" data-i18n="unknown_merchants">不明な加盟店</span>
-                                    <span class="text-sm text-yellow-400" data-i18n="require_approval">承認必要</span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm" data-i18n="international_transactions">海外取引</span>
-                                    <span class="text-sm text-yellow-400" data-i18n="require_approval">承認必要</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- API Section -->
-                <section id="api-view" class="view-section">
-                    <div class="mb-6">
-                        <h2 class="text-xl font-semibold">API</h2>
-                        <p class="text-sm text-gray-400" data-i18n="api_subtitle">API キーとドキュメント</p>
-                    </div>
-
-                    <div class="space-y-6">
-                        <!-- API Keys -->
-                        <div class="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-lg font-semibold" data-i18n="api_keys">APIキー</h3>
-                                <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium" data-i18n="generate_key">
-                                    + キー生成
-                                </button>
-                            </div>
-                            <div class="space-y-3">
-                                <div class="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+                            <!-- Webhook Settings -->
+                            <div class="bg-gray-900/30 border border-gray-800/50 rounded-2xl p-8">
+                                <h2 class="text-xl font-bold mb-6" data-i18n="webhook_settings">Webhook設定</h2>
+                                <div class="space-y-6">
                                     <div>
-                                        <div class="font-mono text-sm">sk_live_••••••••••••••••••••••••••••••••••••1234</div>
-                                        <div class="text-xs text-gray-400 mt-1" data-i18n="created_feb_15">作成日: 2024年2月15日 • 最終使用: 2時間前</div>
+                                        <label class="block text-sm font-semibold text-gray-300 mb-3" data-i18n="webhook_url">Webhook URL</label>
+                                        <input type="url" placeholder="https://your-app.com/webhook" class="w-full bg-gray-800/50 text-white px-4 py-3 rounded-xl border border-gray-700/50 focus:outline-none focus:border-primary">
                                     </div>
-                                    <div class="flex space-x-2">
-                                        <button class="text-primary hover:text-primary/80 text-sm font-medium" data-i18n="copy">コピー</button>
-                                        <button class="text-red-400 hover:text-red-300 text-sm font-medium" data-i18n="delete">削除</button>
+                                    <div>
+                                        <h3 class="font-semibold mb-4" data-i18n="webhook_events">送信イベント</h3>
+                                        <div class="space-y-3">
+                                            <label class="flex items-center space-x-3">
+                                                <input type="checkbox" class="w-5 h-5 text-primary bg-gray-800 border-gray-600 rounded focus:ring-primary focus:ring-2" checked>
+                                                <span class="text-sm" data-i18n="transaction_approved">取引承認</span>
+                                            </label>
+                                            <label class="flex items-center space-x-3">
+                                                <input type="checkbox" class="w-5 h-5 text-primary bg-gray-800 border-gray-600 rounded focus:ring-primary focus:ring-2" checked>
+                                                <span class="text-sm" data-i18n="transaction_blocked">取引ブロック</span>
+                                            </label>
+                                            <label class="flex items-center space-x-3">
+                                                <input type="checkbox" class="w-5 h-5 text-primary bg-gray-800 border-gray-600 rounded focus:ring-primary focus:ring-2">
+                                                <span class="text-sm" data-i18n="card_issued">カード発行</span>
+                                            </label>
+                                            <label class="flex items-center space-x-3">
+                                                <input type="checkbox" class="w-5 h-5 text-primary bg-gray-800 border-gray-600 rounded focus:ring-primary focus:ring-2">
+                                                <span class="text-sm" data-i18n="limit_reached">上限到達</span>
+                                            </label>
+                                        </div>
                                     </div>
+                                    <button class="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-medium transition-all" data-i18n="save_webhook">
+                                        保存
+                                    </button>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Code Example -->
-                        <div class="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
-                            <h3 class="text-lg font-semibold mb-4" data-i18n="code_example">コード例</h3>
-                            <div class="bg-gray-950 border border-gray-800 rounded-lg p-4">
-                                <pre class="text-sm overflow-x-auto"><code class="text-green-400"># Python SDK Example
-from osaifu import OsAifuClient
-
-# Initialize client
-client = OsAifuClient(api_key="sk_live_your_api_key")
-
-# Create payment request
-payment = client.payments.create(
-    agent_id="ad-optimizer",
-    amount=45000,  # JPY
-    merchant="Google Ads",
-    description="Campaign optimization"
-)
-
-# Check payment status
-if payment.status == "approved":
-    print("Payment approved!")
-else:
-    print("Payment blocked:", payment.decline_reason)</code></pre>
-                            </div>
-                            <div class="mt-4 flex space-x-4">
-                                <button class="text-primary hover:text-primary/80 text-sm font-medium" data-i18n="view_docs">📚 ドキュメント</button>
-                                <button class="text-primary hover:text-primary/80 text-sm font-medium" data-i18n="download_sdk">⬇️ SDK ダウンロード</button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                    </section>
+                </div>
             </div>
         </main>
     </div>
 
-    <!-- Agent Creation Modal -->
-    <div id="agent-creation-modal" class="modal">
-        <div class="bg-gray-900 rounded-2xl shadow-2xl border border-gray-800 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <!-- Card Issuance Modal -->
+    <div id="card-issuance-modal" class="modal">
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
             <!-- Modal Header -->
-            <div class="p-6 border-b border-gray-800">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-xl font-semibold" data-i18n="create_new_agent">新しいエージェントを作成</h2>
-                    <button onclick="closeAgentCreationModal()" class="text-gray-400 hover:text-white">
+            <div class="p-8 border-b border-gray-800/50">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold" data-i18n="issue_new_card">新しいカードを発行</h2>
+                    <button onclick="closeCardIssuanceModal()" class="text-gray-400 hover:text-white p-2 hover:bg-gray-800 rounded-lg transition-all">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </button>
                 </div>
-                <!-- Progress Indicator -->
-                <div class="flex items-center justify-between mt-4">
-                    <div class="flex space-x-2">
-                        <div id="step-indicator-1" class="step-indicator active w-2.5 h-2.5 rounded-full bg-primary"></div>
-                        <div id="step-indicator-2" class="step-indicator w-2.5 h-2.5 rounded-full bg-gray-600"></div>
-                        <div id="step-indicator-3" class="step-indicator w-2.5 h-2.5 rounded-full bg-gray-600"></div>
-                        <div id="step-indicator-4" class="step-indicator w-2.5 h-2.5 rounded-full bg-gray-600"></div>
-                        <div id="step-indicator-5" class="step-indicator w-2.5 h-2.5 rounded-full bg-gray-600"></div>
+                
+                <!-- Step Progress -->
+                <div class="flex items-center space-x-4 mb-2">
+                    <div id="step-1-indicator" class="flex items-center space-x-2">
+                        <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold">1</div>
+                        <span class="text-sm font-medium text-primary" data-i18n="card_settings">カード設定</span>
                     </div>
-                    <span id="step-counter" class="text-sm text-gray-400">1 / 5</span>
+                    <div class="h-px bg-gray-700 flex-1"></div>
+                    <div id="step-2-indicator" class="flex items-center space-x-2">
+                        <div class="w-8 h-8 rounded-full bg-gray-700 text-gray-400 flex items-center justify-center text-sm font-bold">2</div>
+                        <span class="text-sm font-medium text-gray-400" data-i18n="usage_rules">利用ルール</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Modal Body -->
-            <div class="p-6">
-                <!-- Step 1: Basic Information -->
-                <div id="step-1" class="step-content active">
-                    <div class="mb-6">
-                        <h3 class="text-lg font-semibold mb-2" data-i18n="step_1_basic_info">ステップ 1: 基本情報</h3>
-                        <p class="text-sm text-gray-400" data-i18n="step_1_description">エージェントの基本情報を入力してください</p>
-                    </div>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2" data-i18n="agent_name">エージェント名</label>
-                            <input id="agent-name" type="text" placeholder="例: Ad-Optimizer" class="w-full bg-gray-800 text-white px-4 py-3 rounded-lg border border-gray-700 focus:outline-none focus:border-primary">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2" data-i18n="agent_description">エージェントの説明</label>
-                            <textarea id="agent-description" rows="3" placeholder="例: Google/Meta広告の自動運用" class="w-full bg-gray-800 text-white px-4 py-3 rounded-lg border border-gray-700 focus:outline-none focus:border-primary resize-none"></textarea>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2" data-i18n="team_department">チーム/部門</label>
-                            <select id="agent-team" class="w-full bg-gray-800 text-white px-4 py-3 rounded-lg border border-gray-700 focus:outline-none focus:border-primary">
-                                <option value="" data-i18n="select_team">チームを選択してください</option>
-                                <option value="marketing" data-i18n="team_marketing">マーケティング</option>
-                                <option value="engineering" data-i18n="team_engineering">エンジニアリング</option>
-                                <option value="data" data-i18n="team_data">データ</option>
-                                <option value="it" data-i18n="team_it">IT</option>
-                                <option value="support" data-i18n="team_support">サポート</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Step 2: Card Settings -->
-                <div id="step-2" class="step-content">
-                    <div class="mb-6">
-                        <h3 class="text-lg font-semibold mb-2" data-i18n="step_2_card_settings">ステップ 2: カード設定</h3>
-                        <p class="text-sm text-gray-400" data-i18n="step_2_description">バーチャルカードの設定を行います</p>
-                    </div>
-                    
+            <!-- Modal Content -->
+            <div class="p-8 relative overflow-hidden">
+                <!-- Step 1: Card Settings -->
+                <div id="step-1-content" class="step-content active">
                     <div class="space-y-6">
-                        <div class="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg">
-                            <div>
-                                <label class="text-sm font-medium" data-i18n="issue_virtual_card">バーチャルカードを発行する</label>
-                                <p class="text-xs text-gray-400" data-i18n="card_recommended">エージェントの決済に推奨</p>
-                            </div>
-                            <label class="toggle-switch">
-                                <input id="issue-card-toggle" type="checkbox" checked>
-                                <span class="toggle-slider"></span>
-                            </label>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-300 mb-3" data-i18n="card_name">カード名</label>
+                            <input id="card-name-input" type="text" placeholder="例: 広告運用カード" class="w-full bg-gray-800/50 text-white px-4 py-4 rounded-xl border border-gray-700/50 focus:outline-none focus:border-primary text-lg">
+                            <p class="text-xs text-gray-500 mt-2" data-i18n="card_name_desc">エージェントが使用するカードの名前</p>
                         </div>
                         
-                        <div id="card-settings" class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-2" data-i18n="card_currency">カードの通貨</label>
-                                <div class="grid grid-cols-3 gap-3">
-                                    <label class="cursor-pointer">
-                                        <input type="radio" name="card-currency" value="JPY" checked class="sr-only">
-                                        <div class="border-2 border-gray-700 rounded-lg p-3 text-center hover:border-primary transition-colors currency-option">
-                                            <div class="text-lg">¥</div>
-                                            <div class="text-xs">JPY</div>
-                                        </div>
-                                    </label>
-                                    <label class="cursor-pointer">
-                                        <input type="radio" name="card-currency" value="USD" class="sr-only">
-                                        <div class="border-2 border-gray-700 rounded-lg p-3 text-center hover:border-primary transition-colors currency-option">
-                                            <div class="text-lg">$</div>
-                                            <div class="text-xs">USD</div>
-                                        </div>
-                                    </label>
-                                    <label class="cursor-pointer">
-                                        <input type="radio" name="card-currency" value="BRL" class="sr-only">
-                                        <div class="border-2 border-gray-700 rounded-lg p-3 text-center hover:border-primary transition-colors currency-option">
-                                            <div class="text-lg">R$</div>
-                                            <div class="text-xs">BRL</div>
-                                        </div>
-                                    </label>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-2" data-i18n="card_nickname">カードのニックネーム</label>
-                                <input id="card-nickname" type="text" placeholder="Ad-Optimizer-001" class="w-full bg-gray-800 text-white px-4 py-3 rounded-lg border border-gray-700 focus:outline-none focus:border-primary">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-300 mb-3" data-i18n="agent_name">渡す先</label>
+                            <input id="agent-name-input" type="text" placeholder="例: Ad-Optimizer" class="w-full bg-gray-800/50 text-white px-4 py-4 rounded-xl border border-gray-700/50 focus:outline-none focus:border-primary text-lg">
+                            <p class="text-xs text-gray-500 mt-2" data-i18n="agent_name_desc">カードを使用するAIエージェント名</p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-300 mb-3" data-i18n="currency">通貨</label>
+                            <div class="grid grid-cols-3 gap-4">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="currency" value="JPY" checked class="sr-only">
+                                    <div class="currency-option border-2 border-primary bg-primary/10 rounded-xl p-4 text-center transition-all">
+                                        <div class="text-2xl mb-2">¥</div>
+                                        <div class="text-sm font-medium">JPY</div>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="currency" value="USD" class="sr-only">
+                                    <div class="currency-option border-2 border-gray-700 hover:border-primary/50 rounded-xl p-4 text-center transition-all">
+                                        <div class="text-2xl mb-2">$</div>
+                                        <div class="text-sm font-medium">USD</div>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="currency" value="BRL" class="sr-only">
+                                    <div class="currency-option border-2 border-gray-700 hover:border-primary/50 rounded-xl p-4 text-center transition-all">
+                                        <div class="text-2xl mb-2">R$</div>
+                                        <div class="text-sm font-medium">BRL</div>
+                                    </div>
+                                </label>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Step 3: Usage Limits -->
-                <div id="step-3" class="step-content">
-                    <div class="mb-6">
-                        <h3 class="text-lg font-semibold mb-2" data-i18n="step_3_usage_limits">ステップ 3: 利用制限</h3>
-                        <p class="text-sm text-gray-400" data-i18n="step_3_description">エージェントの利用制限を設定します</p>
-                    </div>
-                    
-                    <div class="space-y-6">
+                <!-- Step 2: Usage Rules -->
+                <div id="step-2-content" class="step-content">
+                    <div class="space-y-8">
+                        <!-- Monthly Limit -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-3" data-i18n="monthly_limit_setting">月額上限</label>
-                            <div class="space-y-3">
+                            <label class="block text-sm font-semibold text-gray-300 mb-4" data-i18n="monthly_limit">月額上限</label>
+                            <div class="space-y-4">
                                 <input id="monthly-limit-slider" type="range" min="10000" max="1000000" value="200000" class="w-full range-slider">
-                                <div class="flex items-center space-x-3">
+                                <div class="flex items-center space-x-4">
                                     <span class="text-sm text-gray-400">¥10,000</span>
-                                    <input id="monthly-limit-input" type="text" value="¥200,000" class="flex-1 bg-gray-800 text-white px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-primary text-center">
+                                    <input id="monthly-limit-input" type="number" min="10000" max="1000000" value="200000" class="flex-1 bg-gray-800/50 text-white px-4 py-2 rounded-lg border border-gray-700/50 focus:outline-none focus:border-primary text-center font-mono text-lg font-bold">
                                     <span class="text-sm text-gray-400">¥1,000,000</span>
                                 </div>
                             </div>
                         </div>
                         
+                        <!-- Per Transaction Limit -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-3" data-i18n="per_transaction_limit">1取引あたりの上限</label>
-                            <div class="space-y-3">
-                                <input id="transaction-limit-slider" type="range" min="1000" max="100000" value="50000" class="w-full range-slider">
-                                <div class="flex items-center space-x-3">
-                                    <span class="text-sm text-gray-400">¥1,000</span>
-                                    <input id="transaction-limit-input" type="text" value="¥50,000" class="flex-1 bg-gray-800 text-white px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-primary text-center">
-                                    <span class="text-sm text-gray-400">¥100,000</span>
-                                </div>
-                            </div>
+                            <label class="block text-sm font-semibold text-gray-300 mb-4" data-i18n="per_transaction_limit">1回あたりの上限</label>
+                            <input id="transaction-limit-input" type="number" value="50000" class="w-full bg-gray-800/50 text-white px-4 py-4 rounded-xl border border-gray-700/50 focus:outline-none focus:border-primary font-mono text-lg">
                         </div>
                         
+                        <!-- Categories -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-3" data-i18n="mcc_restrictions">MCC制限</label>
+                            <label class="block text-sm font-semibold text-gray-300 mb-4" data-i18n="allowed_categories">利用カテゴリ制限</label>
                             <div class="grid grid-cols-2 gap-3">
-                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
-                                    <input type="checkbox" class="rounded border-gray-600 text-primary focus:ring-primary focus:ring-offset-0">
-                                    <span class="text-sm" data-i18n="mcc_advertising">広告</span>
+                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 cursor-pointer transition-all">
+                                    <input type="checkbox" class="w-5 h-5 text-primary bg-gray-700 border-gray-600 rounded focus:ring-primary focus:ring-2">
+                                    <span data-i18n="category_ads">広告</span>
                                 </label>
-                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
-                                    <input type="checkbox" class="rounded border-gray-600 text-primary focus:ring-primary focus:ring-offset-0">
-                                    <span class="text-sm" data-i18n="mcc_cloud_saas">クラウド/SaaS</span>
+                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 cursor-pointer transition-all">
+                                    <input type="checkbox" class="w-5 h-5 text-primary bg-gray-700 border-gray-600 rounded focus:ring-primary focus:ring-2" checked>
+                                    <span data-i18n="category_cloud">クラウド</span>
                                 </label>
-                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
-                                    <input type="checkbox" class="rounded border-gray-600 text-primary focus:ring-primary focus:ring-offset-0">
-                                    <span class="text-sm" data-i18n="mcc_software">ソフトウェア</span>
+                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 cursor-pointer transition-all">
+                                    <input type="checkbox" class="w-5 h-5 text-primary bg-gray-700 border-gray-600 rounded focus:ring-primary focus:ring-2">
+                                    <span data-i18n="category_saas">SaaS</span>
                                 </label>
-                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
-                                    <input type="checkbox" class="rounded border-gray-600 text-primary focus:ring-primary focus:ring-offset-0">
-                                    <span class="text-sm" data-i18n="mcc_marketplace">マーケットプレイス</span>
-                                </label>
-                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg cursor-pointer col-span-2">
-                                    <input type="checkbox" class="rounded border-gray-600 text-primary focus:ring-primary focus:ring-offset-0" checked>
-                                    <span class="text-sm" data-i18n="mcc_all_categories">全カテゴリ許可</span>
+                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 cursor-pointer transition-all">
+                                    <input type="checkbox" class="w-5 h-5 text-primary bg-gray-700 border-gray-600 rounded focus:ring-primary focus:ring-2" checked>
+                                    <span data-i18n="category_all">全許可</span>
                                 </label>
                             </div>
                         </div>
                         
+                        <!-- Approval Threshold -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-3" data-i18n="time_restrictions">時間制限</label>
-                            <div class="space-y-3">
-                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
-                                    <input type="radio" name="time-restriction" value="business-hours" class="text-primary focus:ring-primary focus:ring-offset-0">
-                                    <span class="text-sm" data-i18n="business_hours_only">営業時間のみ(9-18時)</span>
-                                </label>
-                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
-                                    <input type="radio" name="time-restriction" value="weekdays-only" class="text-primary focus:ring-primary focus:ring-offset-0">
-                                    <span class="text-sm" data-i18n="weekdays_only">平日のみ</span>
-                                </label>
-                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
-                                    <input type="radio" name="time-restriction" value="no-restriction" class="text-primary focus:ring-primary focus:ring-offset-0" checked>
-                                    <span class="text-sm" data-i18n="no_restrictions">制限なし</span>
-                                </label>
+                            <label class="block text-sm font-semibold text-gray-300 mb-4" data-i18n="approval_required">高額決済の承認</label>
+                            <div class="flex items-center space-x-4 p-4 bg-gray-800/30 rounded-xl">
+                                <input id="approval-threshold" type="number" value="50000" class="bg-gray-700/50 text-white px-4 py-2 rounded-lg border border-gray-600/50 focus:outline-none focus:border-primary font-mono w-32">
+                                <span class="text-gray-400" data-i18n="approval_desc">円以上は承認必要</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Step 4: Approval Flow -->
-                <div id="step-4" class="step-content">
-                    <div class="mb-6">
-                        <h3 class="text-lg font-semibold mb-2" data-i18n="step_4_approval_flow">ステップ 4: 承認フロー</h3>
-                        <p class="text-sm text-gray-400" data-i18n="step_4_description">承認プロセスの設定を行います</p>
-                    </div>
-                    
-                    <div class="space-y-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-3" data-i18n="auto_approval_limit">自動承認の上限金額</label>
-                            <div class="space-y-3">
-                                <input id="auto-approval-slider" type="range" min="0" max="100000" value="10000" class="w-full range-slider">
-                                <div class="flex items-center space-x-3">
-                                    <span class="text-sm text-gray-400">¥0</span>
-                                    <input id="auto-approval-input" type="text" value="¥10,000" class="flex-1 bg-gray-800 text-white px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-primary text-center">
-                                    <span class="text-sm text-gray-400">¥100,000</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-3" data-i18n="above_limit_action">上限を超えた場合のアクション</label>
-                            <div class="space-y-3">
-                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
-                                    <input type="radio" name="above-limit-action" value="require-approval" class="text-primary focus:ring-primary focus:ring-offset-0" checked>
-                                    <div class="flex-1">
-                                        <div class="text-sm font-medium" data-i18n="require_approval_option">承認待ち</div>
-                                        <div class="text-xs text-gray-400" data-i18n="require_approval_desc">管理者の承認を待つ</div>
+                <!-- Success Step -->
+                <div id="success-content" class="step-content text-center">
+                    <div class="space-y-8">
+                        <!-- Card Visual -->
+                        <div class="flex justify-center mb-8">
+                            <div class="card-visual card-appear w-80 h-48 rounded-2xl relative overflow-hidden shadow-2xl">
+                                <div class="absolute inset-0 p-6 flex flex-col justify-between">
+                                    <div class="flex justify-between items-start">
+                                        <div class="text-white">
+                                            <div class="text-sm opacity-80">osAIfu Card</div>
+                                            <div class="font-bold text-lg" id="success-card-name">広告運用カード</div>
+                                        </div>
+                                        <div class="text-white text-xl font-bold">VISA</div>
                                     </div>
-                                </label>
-                                <label class="flex items-center space-x-3 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
-                                    <input type="radio" name="above-limit-action" value="block" class="text-primary focus:ring-primary focus:ring-offset-0">
-                                    <div class="flex-1">
-                                        <div class="text-sm font-medium" data-i18n="block_option">ブロック</div>
-                                        <div class="text-xs text-gray-400" data-i18n="block_desc">即座に取引を拒否</div>
+                                    <div class="flex justify-between items-end text-white">
+                                        <div>
+                                            <div class="text-xs opacity-80">Agent</div>
+                                            <div class="font-medium" id="success-agent-name">Ad-Optimizer</div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-xs opacity-80">Monthly Limit</div>
+                                            <div class="font-bold" id="success-monthly-limit">¥200,000</div>
+                                        </div>
                                     </div>
-                                </label>
+                                </div>
                             </div>
                         </div>
                         
-                        <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-3" data-i18n="notification_destination">通知先</label>
-                            <div class="grid grid-cols-3 gap-3">
-                                <label class="flex items-center justify-center space-x-2 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
-                                    <input type="checkbox" class="rounded border-gray-600 text-primary focus:ring-primary focus:ring-offset-0" checked>
-                                    <span class="text-sm" data-i18n="email">メール</span>
-                                </label>
-                                <label class="flex items-center justify-center space-x-2 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
-                                    <input type="checkbox" class="rounded border-gray-600 text-primary focus:ring-primary focus:ring-offset-0">
-                                    <span class="text-sm">Slack</span>
-                                </label>
-                                <label class="flex items-center justify-center space-x-2 p-3 bg-gray-800/30 rounded-lg cursor-pointer">
-                                    <input type="checkbox" class="rounded border-gray-600 text-primary focus:ring-primary focus:ring-offset-0">
-                                    <span class="text-sm" data-i18n="both">両方</span>
-                                </label>
+                        <!-- Success Message -->
+                        <div class="space-y-4">
+                            <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                                </svg>
                             </div>
+                            <h3 class="text-2xl font-bold text-green-400" data-i18n="card_issued_success">カード発行完了！</h3>
+                            <p class="text-gray-400" data-i18n="setup_agent_instruction">このキーをAIエージェントに設定してください</p>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Step 5: Confirmation -->
-                <div id="step-5" class="step-content">
-                    <div class="mb-6">
-                        <h3 class="text-lg font-semibold mb-2" data-i18n="step_5_confirmation">ステップ 5: 確認画面</h3>
-                        <p class="text-sm text-gray-400" data-i18n="step_5_description">設定内容を確認してください</p>
-                    </div>
-                    
-                    <div id="confirmation-summary" class="space-y-4 bg-gray-800/30 rounded-lg p-4">
-                        <!-- Summary content will be populated by JavaScript -->
-                    </div>
-                </div>
-
-                <!-- Success Screen -->
-                <div id="success-screen" class="step-content text-center" style="display: none;">
-                    <div class="mb-6">
-                        <div class="checkmark w-16 h-16 mx-auto mb-4 text-green-400">
-                            <svg class="w-full h-full" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-lg font-semibold mb-2" data-i18n="agent_created_success">エージェントが作成されました！</h3>
-                        <p class="text-sm text-gray-400" data-i18n="agent_created_description">新しいエージェントがダッシュボードに追加されました</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modal Footer -->
-            <div class="p-6 border-t border-gray-800 flex justify-between">
-                <button id="prev-step-btn" onclick="previousStep()" class="px-6 py-2 text-gray-400 hover:text-white transition-colors" style="display: none;" data-i18n="previous">前へ</button>
-                <div class="flex space-x-3 ml-auto">
-                    <button onclick="closeAgentCreationModal()" class="px-6 py-2 text-gray-400 hover:text-white transition-colors" data-i18n="cancel">キャンセル</button>
-                    <button id="next-step-btn" onclick="nextStep()" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors" data-i18n="next">次へ</button>
-                    <button id="create-agent-btn" onclick="createAgent()" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors" style="display: none;" data-i18n="create">作成</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Card Issuance Modal -->
-    <div id="card-issuance-modal" class="modal">
-        <div class="bg-gray-900 rounded-2xl shadow-2xl border border-gray-800 w-full max-w-lg">
-            <!-- Modal Header -->
-            <div class="p-6 border-b border-gray-800">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-xl font-semibold" data-i18n="issue_new_card">新しいカードを発行</h2>
-                    <button onclick="closeCardIssuanceModal()" class="text-gray-400 hover:text-white">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Modal Body -->
-            <div class="p-6" id="card-issuance-form">
-                <div class="space-y-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2" data-i18n="agent_name">エージェント名</label>
-                        <input id="card-agent-name" type="text" readonly class="w-full bg-gray-800/50 text-gray-400 px-4 py-3 rounded-lg border border-gray-700">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2" data-i18n="card_currency">カードの通貨</label>
-                        <div class="grid grid-cols-3 gap-3">
-                            <label class="cursor-pointer">
-                                <input type="radio" name="card-issuance-currency" value="JPY" checked class="sr-only">
-                                <div class="border-2 border-gray-700 rounded-lg p-3 text-center hover:border-primary transition-colors currency-option">
-                                    <div class="text-lg">¥</div>
-                                    <div class="text-xs">JPY</div>
-                                </div>
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" name="card-issuance-currency" value="USD" class="sr-only">
-                                <div class="border-2 border-gray-700 rounded-lg p-3 text-center hover:border-primary transition-colors currency-option">
-                                    <div class="text-lg">$</div>
-                                    <div class="text-xs">USD</div>
-                                </div>
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" name="card-issuance-currency" value="BRL" class="sr-only">
-                                <div class="border-2 border-gray-700 rounded-lg p-3 text-center hover:border-primary transition-colors currency-option">
-                                    <div class="text-lg">R$</div>
-                                    <div class="text-xs">BRL</div>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-3" data-i18n="monthly_limit_setting">月額上限</label>
-                        <div class="space-y-3">
-                            <input id="card-monthly-limit-slider" type="range" min="10000" max="1000000" value="200000" class="w-full range-slider">
+                        
+                        <!-- API Key -->
+                        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+                            <label class="block text-sm font-semibold text-gray-300 mb-3">API Key</label>
                             <div class="flex items-center space-x-3">
-                                <span class="text-sm text-gray-400">¥10,000</span>
-                                <input id="card-monthly-limit-input" type="text" value="¥200,000" class="flex-1 bg-gray-800 text-white px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-primary text-center">
-                                <span class="text-sm text-gray-400">¥1,000,000</span>
+                                <input id="generated-api-key" type="text" value="osaifu_live_demo_rZQRk8jK9n2P3qV7wX4mT5yU6iE8oL1s" readonly class="flex-1 bg-gray-700/50 text-white px-4 py-3 rounded-lg border border-gray-600/50 font-mono text-sm">
+                                <button onclick="copyApiKey()" class="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg font-medium transition-all" data-i18n="copy">
+                                    コピー
+                                </button>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
+                        
+                        <!-- Connection Instructions -->
+                        <div class="bg-gray-800/30 rounded-xl p-6 text-left">
+                            <h4 class="font-semibold mb-4" data-i18n="connection_methods">接続方法</h4>
+                            <div class="bg-gray-900/50 border border-gray-700 rounded-lg p-4">
+                                <pre class="text-sm text-green-400 overflow-x-auto"><code># OpenClawの場合
+OSAIFU_API_KEY=osaifu_live_demo_rZQRk8jK9n2P3qV7wX4mT5yU6iE8oL1s
 
-            <!-- Card Preview -->
-            <div id="card-preview" class="p-6" style="display: none;">
-                <div class="text-center">
-                    <div class="card-visual card-appear w-full max-w-xs h-44 mx-auto rounded-xl relative overflow-hidden shadow-2xl mb-6">
-                        <div class="absolute inset-0 p-4 flex flex-col justify-between">
-                            <div class="flex justify-between items-start">
-                                <div class="text-white">
-                                    <div class="text-xs opacity-80">Virtual Card</div>
-                                    <div class="font-semibold text-sm" id="preview-agent-name">Agent Name</div>
-                                </div>
-                                <div class="text-white text-lg font-bold">VISA</div>
+# Python SDKの場合  
+client = OsAifuClient(api_key="osaifu_live_demo_rZQRk8jK9n2P3qV7wX4mT5yU6iE8oL1s")</code></pre>
                             </div>
-                            <div class="text-white space-y-2">
-                                <div class="font-mono text-sm" id="preview-card-number">**** **** **** 1234</div>
-                                <div class="flex justify-between items-end">
-                                    <div>
-                                        <div class="text-xs opacity-80">EXP</div>
-                                        <div class="text-xs font-mono" id="preview-expiry">12/28</div>
-                                    </div>
-                                    <div>
-                                        <div class="text-xs opacity-80">CVC</div>
-                                        <div class="text-xs font-mono" id="preview-cvc">***</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="space-y-3">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-400" data-i18n="card_number">カード番号</span>
-                            <div class="flex items-center space-x-2">
-                                <span id="masked-card-number" class="font-mono">**** **** **** 1234</span>
-                                <button onclick="toggleCardDetails('card-number')" class="text-primary hover:text-primary/80 text-xs" data-i18n="show">表示</button>
-                            </div>
-                        </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-400">CVC</span>
-                            <div class="flex items-center space-x-2">
-                                <span id="masked-cvc" class="font-mono">***</span>
-                                <button onclick="toggleCardDetails('cvc')" class="text-primary hover:text-primary/80 text-xs" data-i18n="show">表示</button>
-                            </div>
-                        </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-400" data-i18n="expiry_date">有効期限</span>
-                            <span class="font-mono">12/2028</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Modal Footer -->
-            <div class="p-6 border-t border-gray-800 flex justify-between">
-                <button onclick="closeCardIssuanceModal()" class="px-6 py-2 text-gray-400 hover:text-white transition-colors" data-i18n="cancel">キャンセル</button>
-                <button id="issue-card-btn" onclick="issueCard()" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors" data-i18n="issue_card">カードを発行</button>
+            <div class="p-8 border-t border-gray-800/50">
+                <div class="flex justify-between">
+                    <button id="back-button" onclick="previousStep()" class="px-6 py-3 text-gray-400 hover:text-white transition-colors font-medium" style="display: none;" data-i18n="back">
+                        戻る
+                    </button>
+                    <div class="flex space-x-4 ml-auto">
+                        <button onclick="closeCardIssuanceModal()" class="px-6 py-3 text-gray-400 hover:text-white transition-colors font-medium" data-i18n="cancel">
+                            キャンセル
+                        </button>
+                        <button id="next-button" onclick="nextStep()" class="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-xl font-medium transition-all" data-i18n="next">
+                            次へ
+                        </button>
+                        <button id="issue-button" onclick="issueCard()" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl font-medium transition-all" style="display: none;" data-i18n="issue_card">
+                            発行する
+                        </button>
+                        <button id="done-button" onclick="closeCardIssuanceModal()" class="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-xl font-medium transition-all" style="display: none;" data-i18n="done">
+                            完了
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Internationalization
-        const i18n = {
+        // Translations
+        const translations = {
             jp: {
-                overview: '概要',
-                overview_subtitle: 'AI エージェントの財務活動を監視',
-                transactions: '取引履歴',
-                transactions_subtitle: 'すべての取引を表示',
-                cards: 'カード管理',
-                cards_subtitle: 'バーチャルカードを管理',
-                policies: 'ポリシー',
-                policies_subtitle: '支出ルールを設定',
-                api: 'API',
-                api_subtitle: 'API キーとドキュメント',
-                monthly_spend: '今月の利用額',
-                budget_usage: '予算使用率',
-                active_agents: 'アクティブエージェント',
-                all_operational: 'すべて稼働中',
-                add_agent: '+ エージェント追加',
-                add_card: '+ カード追加',
-                agents_list: 'エージェント一覧',
-                active: '有効',
-                paused: '一時停止',
-                approved: '承認済み',
-                blocked: 'ブロック',
-                agent: 'エージェント',
-                merchant: '加盟店',
-                amount: '金額',
-                status: 'ステータス',
-                time: '時間',
-                time_2h_ago: '2時間前',
-                time_4h_ago: '4時間前',
-                time_6h_ago: '6時間前',
-                time_8h_ago: '8時間前',
-                unknown_merchant: '不明な加盟店',
-                search_transactions: '取引を検索...',
-                all_agents: '全エージェント',
-                last_30_days: '過去30日',
-                last_7_days: '過去7日',
-                today: '今日',
-                card_details: 'カード詳細',
-                card_number: 'カード番号',
-                monthly_spend: '月間利用額',
-                view_details: '詳細表示',
-                freeze_card: 'カード凍結',
-                all_cards: '全カード',
-                usage: '利用状況',
-                spending_limits: '支出上限',
-                monthly_limit: '月間上限',
-                transaction_limit: '取引上限',
-                approval_rules: '承認ルール',
-                auto_approve_under: '自動承認上限',
-                unknown_merchants: '不明な加盟店',
-                international_transactions: '海外取引',
-                require_approval: '承認必要',
-                edit: '編集',
-                api_keys: 'APIキー',
-                generate_key: '+ キー生成',
-                created_feb_15: '作成日: 2024年2月15日 • 最終使用: 2時間前',
-                copy: 'コピー',
-                delete: '削除',
-                code_example: 'コード例',
-                view_docs: '📚 ドキュメント',
-                download_sdk: '⬇️ SDK ダウンロード',
-                
-                // Agent creation modal
-                create_new_agent: '新しいエージェントを作成',
-                step_1_basic_info: 'ステップ 1: 基本情報',
-                step_1_description: 'エージェントの基本情報を入力してください',
-                agent_name: 'エージェント名',
-                agent_description: 'エージェントの説明',
-                team_department: 'チーム/部門',
-                select_team: 'チームを選択してください',
-                team_marketing: 'マーケティング',
-                team_engineering: 'エンジニアリング',
-                team_data: 'データ',
-                team_it: 'IT',
-                team_support: 'サポート',
-                
-                step_2_card_settings: 'ステップ 2: カード設定',
-                step_2_description: 'バーチャルカードの設定を行います',
-                issue_virtual_card: 'バーチャルカードを発行する',
-                card_recommended: 'エージェントの決済に推奨',
-                card_currency: 'カードの通貨',
-                card_nickname: 'カードのニックネーム',
-                
-                step_3_usage_limits: 'ステップ 3: 利用制限',
-                step_3_description: 'エージェントの利用制限を設定します',
-                monthly_limit_setting: '月額上限',
-                per_transaction_limit: '1取引あたりの上限',
-                mcc_restrictions: 'MCC制限',
-                mcc_advertising: '広告',
-                mcc_cloud_saas: 'クラウド/SaaS',
-                mcc_software: 'ソフトウェア',
-                mcc_marketplace: 'マーケットプレイス',
-                mcc_all_categories: '全カテゴリ許可',
-                time_restrictions: '時間制限',
-                business_hours_only: '営業時間のみ(9-18時)',
-                weekdays_only: '平日のみ',
-                no_restrictions: '制限なし',
-                
-                step_4_approval_flow: 'ステップ 4: 承認フロー',
-                step_4_description: '承認プロセスの設定を行います',
-                auto_approval_limit: '自動承認の上限金額',
-                above_limit_action: '上限を超えた場合のアクション',
-                require_approval_option: '承認待ち',
-                require_approval_desc: '管理者の承認を待つ',
-                block_option: 'ブロック',
-                block_desc: '即座に取引を拒否',
-                notification_destination: '通知先',
-                email: 'メール',
-                both: '両方',
-                
-                step_5_confirmation: 'ステップ 5: 確認画面',
-                step_5_description: '設定内容を確認してください',
-                agent_created_success: 'エージェントが作成されました！',
-                agent_created_description: '新しいエージェントがダッシュボードに追加されました',
-                
-                previous: '前へ',
-                next: '次へ',
-                cancel: 'キャンセル',
-                create: '作成',
-                
-                // Card issuance modal
-                issue_new_card: '新しいカードを発行',
-                issue_card: 'カードを発行',
-                show: '表示',
-                hide: '隠す',
-                expiry_date: '有効期限'
+                home: "ホーム",
+                home_subtitle: "AIエージェントのカードを管理",
+                issue_card: "カード発行",
+                transactions: "取引履歴",
+                settings: "設定",
+                monthly_spend: "今月の利用額",
+                issued_cards: "発行カード数",
+                all_active: "すべて有効",
+                card_list: "カード一覧",
+                new_card: "➕ 新しいカードを発行",
+                active: "有効",
+                paused: "一時停止",
+                card_details: "カード詳細",
+                currency: "通貨",
+                created: "作成日",
+                usage_rules: "利用ルール",
+                per_transaction: "1回上限",
+                categories: "カテゴリ",
+                approval_limit: "承認必要",
+                all_cards: "すべてのカード",
+                all_status: "すべてのステータス",
+                approved: "承認",
+                blocked: "ブロック",
+                last_30_days: "過去30日",
+                last_7_days: "過去7日",
+                today: "今日",
+                datetime: "日時",
+                card_name: "カード名",
+                merchant: "加盟店",
+                amount: "金額",
+                status: "ステータス",
+                notifications: "通知設定",
+                email_notifications: "メール通知",
+                email_desc: "取引の承認/ブロック時にメールを受信",
+                slack_notifications: "Slack通知",
+                slack_desc: "Slackチャンネルに通知を送信",
+                slack_webhook: "Slack Webhook URL",
+                api_keys: "APIキー一覧",
+                generate_new_key: "➕ 新しいキーを生成",
+                copy: "コピー",
+                regenerate: "再生成",
+                delete: "削除",
+                webhook_settings: "Webhook設定",
+                webhook_url: "Webhook URL",
+                webhook_events: "送信イベント",
+                transaction_approved: "取引承認",
+                transaction_blocked: "取引ブロック",
+                card_issued: "カード発行",
+                limit_reached: "上限到達",
+                save_webhook: "保存",
+                issue_new_card: "新しいカードを発行",
+                card_settings: "カード設定",
+                card_name: "カード名",
+                card_name_desc: "エージェントが使用するカードの名前",
+                agent_name: "渡す先",
+                agent_name_desc: "カードを使用するAIエージェント名",
+                monthly_limit: "月額上限",
+                per_transaction_limit: "1回あたりの上限",
+                allowed_categories: "利用カテゴリ制限",
+                category_ads: "広告",
+                category_cloud: "クラウド",
+                category_saas: "SaaS",
+                category_all: "全許可",
+                approval_required: "高額決済の承認",
+                approval_desc: "円以上は承認必要",
+                card_issued_success: "カード発行完了！",
+                setup_agent_instruction: "このキーをAIエージェントに設定してください",
+                connection_methods: "接続方法",
+                back: "戻る",
+                cancel: "キャンセル",
+                next: "次へ",
+                issue_card: "発行する",
+                done: "完了"
             },
             en: {
-                overview: 'Overview',
-                overview_subtitle: 'Monitor your AI agents\' financial activity',
-                transactions: 'Transactions',
-                transactions_subtitle: 'View all transactions',
-                cards: 'Card Management',
-                cards_subtitle: 'Manage virtual cards',
-                policies: 'Policies',
-                policies_subtitle: 'Configure spending rules',
-                api: 'API',
-                api_subtitle: 'API keys and documentation',
-                monthly_spend: 'Monthly Spend',
-                budget_usage: 'Budget Usage',
-                active_agents: 'Active Agents',
-                all_operational: 'All Operational',
-                add_agent: '+ Add Agent',
-                add_card: '+ Add Card',
-                agents_list: 'Agent List',
-                active: 'Active',
-                paused: 'Paused',
-                approved: 'Approved',
-                blocked: 'Blocked',
-                agent: 'Agent',
-                merchant: 'Merchant',
-                amount: 'Amount',
-                status: 'Status',
-                time: 'Time',
-                time_2h_ago: '2 hours ago',
-                time_4h_ago: '4 hours ago',
-                time_6h_ago: '6 hours ago',
-                time_8h_ago: '8 hours ago',
-                unknown_merchant: 'Unknown Merchant',
-                search_transactions: 'Search transactions...',
-                all_agents: 'All Agents',
-                last_30_days: 'Last 30 days',
-                last_7_days: 'Last 7 days',
-                today: 'Today',
-                card_details: 'Card Details',
-                card_number: 'Card Number',
-                monthly_spend: 'Monthly Spend',
-                view_details: 'View Details',
-                freeze_card: 'Freeze Card',
-                all_cards: 'All Cards',
-                usage: 'Usage',
-                spending_limits: 'Spending Limits',
-                monthly_limit: 'Monthly Limit',
-                transaction_limit: 'Transaction Limit',
-                approval_rules: 'Approval Rules',
-                auto_approve_under: 'Auto-approve under',
-                unknown_merchants: 'Unknown merchants',
-                international_transactions: 'International transactions',
-                require_approval: 'Require approval',
-                edit: 'Edit',
-                api_keys: 'API Keys',
-                generate_key: '+ Generate Key',
-                created_feb_15: 'Created: Feb 15, 2024 • Last used: 2 hours ago',
-                copy: 'Copy',
-                delete: 'Delete',
-                code_example: 'Code Example',
-                view_docs: '📚 Documentation',
-                download_sdk: '⬇️ Download SDK',
-                
-                // Agent creation modal
-                create_new_agent: 'Create New Agent',
-                step_1_basic_info: 'Step 1: Basic Information',
-                step_1_description: 'Enter basic information about the agent',
-                agent_name: 'Agent Name',
-                agent_description: 'Agent Description',
-                team_department: 'Team/Department',
-                select_team: 'Select a team',
-                team_marketing: 'Marketing',
-                team_engineering: 'Engineering',
-                team_data: 'Data',
-                team_it: 'IT',
-                team_support: 'Support',
-                
-                step_2_card_settings: 'Step 2: Card Settings',
-                step_2_description: 'Configure virtual card settings',
-                issue_virtual_card: 'Issue Virtual Card',
-                card_recommended: 'Recommended for agent payments',
-                card_currency: 'Card Currency',
-                card_nickname: 'Card Nickname',
-                
-                step_3_usage_limits: 'Step 3: Usage Limits',
-                step_3_description: 'Set usage limits for the agent',
-                monthly_limit_setting: 'Monthly Limit',
-                per_transaction_limit: 'Per Transaction Limit',
-                mcc_restrictions: 'MCC Restrictions',
-                mcc_advertising: 'Advertising',
-                mcc_cloud_saas: 'Cloud/SaaS',
-                mcc_software: 'Software',
-                mcc_marketplace: 'Marketplace',
-                mcc_all_categories: 'All Categories',
-                time_restrictions: 'Time Restrictions',
-                business_hours_only: 'Business Hours Only (9-18)',
-                weekdays_only: 'Weekdays Only',
-                no_restrictions: 'No Restrictions',
-                
-                step_4_approval_flow: 'Step 4: Approval Flow',
-                step_4_description: 'Configure approval process',
-                auto_approval_limit: 'Auto-approval Limit',
-                above_limit_action: 'Action Above Limit',
-                require_approval_option: 'Require Approval',
-                require_approval_desc: 'Wait for admin approval',
-                block_option: 'Block',
-                block_desc: 'Reject transaction immediately',
-                notification_destination: 'Notification Destination',
-                email: 'Email',
-                both: 'Both',
-                
-                step_5_confirmation: 'Step 5: Confirmation',
-                step_5_description: 'Review your settings',
-                agent_created_success: 'Agent Created Successfully!',
-                agent_created_description: 'The new agent has been added to your dashboard',
-                
-                previous: 'Previous',
-                next: 'Next',
-                cancel: 'Cancel',
-                create: 'Create',
-                
-                // Card issuance modal
-                issue_new_card: 'Issue New Card',
-                issue_card: 'Issue Card',
-                show: 'Show',
-                hide: 'Hide',
-                expiry_date: 'Expiry Date'
+                home: "Home",
+                home_subtitle: "Manage AI Agent Cards",
+                issue_card: "Issue Card",
+                transactions: "Transactions",
+                settings: "Settings",
+                monthly_spend: "Monthly Spend",
+                issued_cards: "Issued Cards",
+                all_active: "All Active",
+                card_list: "Card List",
+                new_card: "➕ Issue New Card",
+                active: "Active",
+                paused: "Paused",
+                card_details: "Card Details",
+                currency: "Currency",
+                created: "Created",
+                usage_rules: "Usage Rules",
+                per_transaction: "Per Transaction",
+                categories: "Categories",
+                approval_limit: "Approval Required",
+                all_cards: "All Cards",
+                all_status: "All Status",
+                approved: "Approved",
+                blocked: "Blocked",
+                last_30_days: "Last 30 Days",
+                last_7_days: "Last 7 Days",
+                today: "Today",
+                datetime: "Date/Time",
+                card_name: "Card Name",
+                merchant: "Merchant",
+                amount: "Amount",
+                status: "Status",
+                notifications: "Notifications",
+                email_notifications: "Email Notifications",
+                email_desc: "Receive emails for transaction approvals/blocks",
+                slack_notifications: "Slack Notifications",
+                slack_desc: "Send notifications to Slack channel",
+                slack_webhook: "Slack Webhook URL",
+                api_keys: "API Keys",
+                generate_new_key: "➕ Generate New Key",
+                copy: "Copy",
+                regenerate: "Regenerate",
+                delete: "Delete",
+                webhook_settings: "Webhook Settings",
+                webhook_url: "Webhook URL",
+                webhook_events: "Events to Send",
+                transaction_approved: "Transaction Approved",
+                transaction_blocked: "Transaction Blocked",
+                card_issued: "Card Issued",
+                limit_reached: "Limit Reached",
+                save_webhook: "Save",
+                issue_new_card: "Issue New Card",
+                card_settings: "Card Settings",
+                card_name: "Card Name",
+                card_name_desc: "Name for the card the agent will use",
+                agent_name: "Agent Name",
+                agent_name_desc: "Name of the AI agent using this card",
+                monthly_limit: "Monthly Limit",
+                per_transaction_limit: "Per Transaction Limit",
+                allowed_categories: "Allowed Categories",
+                category_ads: "Advertising",
+                category_cloud: "Cloud",
+                category_saas: "SaaS",
+                category_all: "All Allowed",
+                approval_required: "High-Value Approval",
+                approval_desc: "and above requires approval",
+                card_issued_success: "Card Issued Successfully!",
+                setup_agent_instruction: "Set this key in your AI agent",
+                connection_methods: "Connection Methods",
+                back: "Back",
+                cancel: "Cancel",
+                next: "Next",
+                issue_card: "Issue Card",
+                done: "Done"
             }
         };
 
-        let currentLang = 'jp';
+        let currentLanguage = 'jp';
         let currentStep = 1;
-        let maxSteps = 5;
+        let cards = [];
 
-        // Agent creation modal functions
-        function openAgentCreationModal() {
-            document.getElementById('agent-creation-modal').classList.add('active');
-            currentStep = 1;
-            updateStepIndicators();
-            updateStepButtons();
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSliders();
+            initializeCurrencySelection();
+            updateTranslations();
+        });
+
+        // Language switching
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update button states
+            document.getElementById('lang-jp').classList.toggle('active', lang === 'jp');
+            document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+            
+            updateTranslations();
         }
 
-        function closeAgentCreationModal() {
-            document.getElementById('agent-creation-modal').classList.remove('active');
-            resetModalForm();
-        }
-
-        function resetModalForm() {
-            // Reset form fields
-            document.getElementById('agent-name').value = '';
-            document.getElementById('agent-description').value = '';
-            document.getElementById('agent-team').value = '';
-            document.getElementById('issue-card-toggle').checked = true;
-            document.querySelector('input[name="card-currency"][value="JPY"]').checked = true;
-            document.getElementById('card-nickname').value = '';
-            
-            // Reset sliders
-            document.getElementById('monthly-limit-slider').value = 200000;
-            document.getElementById('monthly-limit-input').value = '¥200,000';
-            document.getElementById('transaction-limit-slider').value = 50000;
-            document.getElementById('transaction-limit-input').value = '¥50,000';
-            document.getElementById('auto-approval-slider').value = 10000;
-            document.getElementById('auto-approval-input').value = '¥10,000';
-            
-            // Reset checkboxes and radio buttons
-            document.querySelectorAll('#agent-creation-modal input[type="checkbox"]').forEach(cb => cb.checked = false);
-            document.querySelectorAll('#agent-creation-modal input[type="radio"]').forEach(rb => rb.checked = false);
-            
-            // Set default selections
-            document.getElementById('issue-card-toggle').checked = true;
-            document.querySelector('input[name="card-currency"][value="JPY"]').checked = true;
-            document.querySelector('input[name="time-restriction"][value="no-restriction"]').checked = true;
-            document.querySelector('input[name="above-limit-action"][value="require-approval"]').checked = true;
-            document.querySelector('#agent-creation-modal input[type="checkbox"][checked]').checked = true;
-            
-            currentStep = 1;
-            updateStepIndicators();
-            updateStepButtons();
-            showStep(1);
-        }
-
-        function nextStep() {
-            if (currentStep < maxSteps) {
-                if (currentStep === 5) {
-                    generateConfirmationSummary();
+        function updateTranslations() {
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[currentLanguage][key]) {
+                    element.textContent = translations[currentLanguage][key];
                 }
-                currentStep++;
-                updateStepIndicators();
-                updateStepButtons();
-                showStep(currentStep);
-                
-                // Update card nickname automatically
-                if (currentStep === 2) {
-                    updateCardNickname();
-                }
-            }
-        }
-
-        function previousStep() {
-            if (currentStep > 1) {
-                currentStep--;
-                updateStepIndicators();
-                updateStepButtons();
-                showStep(currentStep);
-            }
-        }
-
-        function showStep(step) {
-            // Hide all steps
-            document.querySelectorAll('.step-content').forEach(content => {
-                content.classList.remove('active');
-                content.classList.add('prev');
-            });
-            
-            // Show current step
-            setTimeout(() => {
-                document.getElementById(`step-${step}`).classList.remove('prev');
-                document.getElementById(`step-${step}`).classList.add('active');
-            }, 150);
-        }
-
-        function updateStepIndicators() {
-            for (let i = 1; i <= maxSteps; i++) {
-                const indicator = document.getElementById(`step-indicator-${i}`);
-                if (i <= currentStep) {
-                    indicator.classList.add('active');
-                    indicator.style.backgroundColor = '#635BFF';
-                } else {
-                    indicator.classList.remove('active');
-                    indicator.style.backgroundColor = '#4B5563';
-                }
-            }
-            document.getElementById('step-counter').textContent = `${currentStep} / ${maxSteps}`;
-        }
-
-        function updateStepButtons() {
-            const prevBtn = document.getElementById('prev-step-btn');
-            const nextBtn = document.getElementById('next-step-btn');
-            const createBtn = document.getElementById('create-agent-btn');
-            
-            prevBtn.style.display = currentStep > 1 ? 'block' : 'none';
-            
-            if (currentStep === maxSteps) {
-                nextBtn.style.display = 'none';
-                createBtn.style.display = 'block';
-            } else {
-                nextBtn.style.display = 'block';
-                createBtn.style.display = 'none';
-            }
-        }
-
-        function updateCardNickname() {
-            const agentName = document.getElementById('agent-name').value;
-            if (agentName) {
-                document.getElementById('card-nickname').value = `${agentName}-001`;
-            }
-        }
-
-        function generateConfirmationSummary() {
-            const agentName = document.getElementById('agent-name').value;
-            const agentDescription = document.getElementById('agent-description').value;
-            const agentTeam = document.getElementById('agent-team').value;
-            const issueCard = document.getElementById('issue-card-toggle').checked;
-            const cardCurrency = document.querySelector('input[name="card-currency"]:checked')?.value;
-            const cardNickname = document.getElementById('card-nickname').value;
-            const monthlyLimit = document.getElementById('monthly-limit-input').value;
-            const transactionLimit = document.getElementById('transaction-limit-input').value;
-            const autoApprovalLimit = document.getElementById('auto-approval-input').value;
-            
-            const teams = {
-                marketing: currentLang === 'jp' ? 'マーケティング' : 'Marketing',
-                engineering: currentLang === 'jp' ? 'エンジニアリング' : 'Engineering',
-                data: currentLang === 'jp' ? 'データ' : 'Data',
-                it: 'IT',
-                support: currentLang === 'jp' ? 'サポート' : 'Support'
-            };
-            
-            const summary = document.getElementById('confirmation-summary');
-            summary.innerHTML = `
-                <div class="space-y-3">
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">${i18n[currentLang].agent_name}:</span>
-                        <span class="font-medium">${agentName}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">${i18n[currentLang].team_department}:</span>
-                        <span>${teams[agentTeam] || agentTeam}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">${i18n[currentLang].issue_virtual_card}:</span>
-                        <span class="${issueCard ? 'text-green-400' : 'text-red-400'}">${issueCard ? (currentLang === 'jp' ? 'はい' : 'Yes') : (currentLang === 'jp' ? 'いいえ' : 'No')}</span>
-                    </div>
-                    ${issueCard ? `
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">${i18n[currentLang].card_currency}:</span>
-                        <span>${cardCurrency}</span>
-                    </div>
-                    ` : ''}
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">${i18n[currentLang].monthly_limit}:</span>
-                        <span>${monthlyLimit}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">${i18n[currentLang].transaction_limit}:</span>
-                        <span>${transactionLimit}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">${i18n[currentLang].auto_approval_limit}:</span>
-                        <span>${autoApprovalLimit}</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        function createAgent() {
-            // Show success animation
-            document.getElementById('step-5').style.display = 'none';
-            document.getElementById('success-screen').style.display = 'block';
-            document.getElementById('success-screen').classList.add('active');
-            
-            // Hide footer buttons
-            document.querySelector('#agent-creation-modal .p-6.border-t').style.display = 'none';
-            
-            // Add new agent to the list (dummy data)
-            setTimeout(() => {
-                const agentName = document.getElementById('agent-name').value || 'New-Agent';
-                const agentTeam = document.getElementById('agent-team').value || 'marketing';
-                const monthlyLimit = document.getElementById('monthly-limit-input').value.replace('¥', '').replace(',', '') || '200000';
-                
-                const teams = {
-                    marketing: currentLang === 'jp' ? 'Marketing Team' : 'Marketing Team',
-                    engineering: currentLang === 'jp' ? 'Engineering Team' : 'Engineering Team',
-                    data: currentLang === 'jp' ? 'Data Team' : 'Data Team',
-                    it: currentLang === 'jp' ? 'IT Team' : 'IT Team',
-                    support: currentLang === 'jp' ? 'Support Team' : 'Support Team'
-                };
-                
-                const agentContainer = document.getElementById('agents-container');
-                const newAgentHtml = `
-                    <div class="flex items-center justify-between py-4 border-b border-gray-800 last:border-b-0">
-                        <div class="flex items-center space-x-4">
-                            <div class="status-dot status-active"></div>
-                            <div>
-                                <h4 class="font-medium">${agentName}</h4>
-                                <p class="text-sm text-gray-400">${teams[agentTeam]}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-6">
-                            <div class="w-32">
-                                <div class="flex justify-between text-sm mb-1">
-                                    <span class="text-gray-400">利用額</span>
-                                    <span><span class="inline-edit" data-current="0" data-max="${monthlyLimit}" onclick="enableInlineEdit(this)">¥0</span> / ¥${parseInt(monthlyLimit/1000)}K</span>
-                                </div>
-                                <div class="w-full bg-gray-800 rounded-full h-1.5">
-                                    <div class="progress-bar h-1.5 rounded-full" style="width: 0%"></div>
-                                </div>
-                            </div>
-                            <span class="badge-approved px-3 py-1 rounded-full text-xs font-medium" data-i18n="active">有効</span>
-                        </div>
-                    </div>
-                `;
-                
-                agentContainer.insertAdjacentHTML('beforeend', newAgentHtml);
-                
-                // Update agent count
-                const currentCount = parseInt(document.getElementById('agent-count').textContent);
-                document.getElementById('agent-count').textContent = currentCount + 1;
-                
-                // Close modal after showing success
-                setTimeout(() => {
-                    closeAgentCreationModal();
-                    // Reset success screen
-                    document.getElementById('success-screen').style.display = 'none';
-                    document.getElementById('step-5').style.display = 'block';
-                    document.querySelector('#agent-creation-modal .p-6.border-t').style.display = 'flex';
-                }, 2000);
-            }, 1500);
-        }
-
-        // Card issuance modal functions
-        function openCardIssuanceModal(agentName) {
-            document.getElementById('card-issuance-modal').classList.add('active');
-            document.getElementById('card-agent-name').value = agentName;
-            document.getElementById('card-issuance-form').style.display = 'block';
-            document.getElementById('card-preview').style.display = 'none';
-            document.getElementById('issue-card-btn').style.display = 'block';
-        }
-
-        function closeCardIssuanceModal() {
-            document.getElementById('card-issuance-modal').classList.remove('active');
-        }
-
-        function issueCard() {
-            // Generate fake card details
-            const cardNumber = generateCardNumber();
-            const cvc = generateCVC();
-            const expiry = generateExpiry();
-            const agentName = document.getElementById('card-agent-name').value;
-            
-            // Update preview
-            document.getElementById('preview-agent-name').textContent = agentName;
-            document.getElementById('preview-card-number').textContent = cardNumber.replace(/(.{4})/g, '$1 ');
-            document.getElementById('preview-expiry').textContent = expiry.slice(0, 2) + '/' + expiry.slice(2);
-            document.getElementById('preview-cvc').textContent = '***';
-            
-            document.getElementById('masked-card-number').textContent = `**** **** **** ${cardNumber.slice(-4)}`;
-            document.getElementById('masked-cvc').textContent = '***';
-            
-            // Store real values for toggle
-            document.getElementById('masked-card-number').setAttribute('data-real', cardNumber.replace(/(.{4})/g, '$1 ').trim());
-            document.getElementById('masked-cvc').setAttribute('data-real', cvc);
-            
-            // Show preview
-            document.getElementById('card-issuance-form').style.display = 'none';
-            document.getElementById('card-preview').style.display = 'block';
-            document.getElementById('issue-card-btn').style.display = 'none';
-        }
-
-        function toggleCardDetails(type) {
-            const element = type === 'card-number' ? 
-                document.getElementById('masked-card-number') : 
-                document.getElementById('masked-cvc');
-            const button = element.parentNode.querySelector('button');
-            
-            if (element.textContent.includes('*')) {
-                element.textContent = element.getAttribute('data-real');
-                button.textContent = i18n[currentLang].hide;
-                // Hide after 3 seconds
-                setTimeout(() => {
-                    if (type === 'card-number') {
-                        element.textContent = `**** **** **** ${element.getAttribute('data-real').slice(-4)}`;
-                    } else {
-                        element.textContent = '***';
-                    }
-                    button.textContent = i18n[currentLang].show;
-                }, 3000);
-            }
-        }
-
-        function generateCardNumber() {
-            return '4' + Math.random().toString().slice(2, 16);
-        }
-
-        function generateCVC() {
-            return Math.floor(Math.random() * 900 + 100).toString();
-        }
-
-        function generateExpiry() {
-            const year = new Date().getFullYear() + 4;
-            const month = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
-            return month + year.toString().slice(-2);
-        }
-
-        // Inline editing functions
-        function enableInlineEdit(element) {
-            const currentValue = element.getAttribute('data-current');
-            const maxValue = element.getAttribute('data-max');
-            
-            const input = document.createElement('input');
-            input.className = 'inline-edit-input';
-            input.type = 'text';
-            input.value = '¥' + (parseInt(currentValue) / 1000) + 'K';
-            
-            element.parentNode.replaceChild(input, element);
-            input.focus();
-            input.select();
-            
-            function finishEdit() {
-                let value = input.value.replace('¥', '').replace('K', '').replace(',', '');
-                value = parseInt(value) * 1000;
-                
-                if (isNaN(value) || value < 0) {
-                    value = parseInt(currentValue);
-                }
-                
-                const newElement = element.cloneNode(true);
-                newElement.textContent = '¥' + (value / 1000) + 'K';
-                newElement.setAttribute('data-current', value.toString());
-                
-                input.parentNode.replaceChild(newElement, input);
-                
-                // Update progress bar
-                const progressBar = newElement.closest('.py-4').querySelector('.progress-bar');
-                const percentage = (value / parseInt(maxValue)) * 100;
-                progressBar.style.width = Math.min(percentage, 100) + '%';
-            }
-            
-            input.addEventListener('blur', finishEdit);
-            input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    finishEdit();
-                }
-            });
-        }
-
-        // Slider event handlers
-        function setupSliders() {
-            const sliders = [
-                { slider: 'monthly-limit-slider', input: 'monthly-limit-input', prefix: '¥', suffix: '', divider: 1 },
-                { slider: 'transaction-limit-slider', input: 'transaction-limit-input', prefix: '¥', suffix: '', divider: 1 },
-                { slider: 'auto-approval-slider', input: 'auto-approval-input', prefix: '¥', suffix: '', divider: 1 },
-                { slider: 'card-monthly-limit-slider', input: 'card-monthly-limit-input', prefix: '¥', suffix: '', divider: 1 }
-            ];
-            
-            sliders.forEach(({ slider, input, prefix, suffix, divider }) => {
-                const sliderEl = document.getElementById(slider);
-                const inputEl = document.getElementById(input);
-                
-                if (sliderEl && inputEl) {
-                    sliderEl.addEventListener('input', function() {
-                        const value = parseInt(this.value);
-                        inputEl.value = prefix + (value / divider).toLocaleString() + suffix;
-                    });
-                    
-                    inputEl.addEventListener('input', function() {
-                        let value = this.value.replace(prefix, '').replace(suffix, '').replace(/,/g, '');
-                        value = parseInt(value) * divider;
-                        if (!isNaN(value)) {
-                            sliderEl.value = value;
-                        }
-                    });
-                }
-            });
-        }
-
-        // Currency option handlers
-        function setupCurrencyOptions() {
-            document.querySelectorAll('.currency-option').forEach(option => {
-                option.addEventListener('click', function() {
-                    const radio = this.parentElement.querySelector('input[type="radio"]');
-                    radio.checked = true;
-                    
-                    // Update visual state
-                    document.querySelectorAll('.currency-option').forEach(opt => {
-                        opt.classList.remove('border-primary');
-                        opt.classList.add('border-gray-700');
-                    });
-                    this.classList.remove('border-gray-700');
-                    this.classList.add('border-primary');
-                });
             });
         }
 
         // View switching
         function showView(viewName) {
             // Hide all views
-            document.querySelectorAll('.view-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // Remove active state from all nav items
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
+            const views = document.querySelectorAll('.view-section');
+            views.forEach(view => view.style.display = 'none');
             
             // Show selected view
-            document.getElementById(viewName + '-view').classList.add('active');
+            const targetView = document.getElementById(viewName + '-view');
+            if (targetView) {
+                targetView.style.display = 'block';
+            }
             
-            // Add active state to clicked nav item
-            event.target.closest('.nav-item').classList.add('active');
+            // Update navigation active state
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
             
-            // Update page title and subtitle
-            const titles = {
-                overview: { titleKey: 'overview', subtitleKey: 'overview_subtitle' },
-                transactions: { titleKey: 'transactions', subtitleKey: 'transactions_subtitle' },
-                cards: { titleKey: 'cards', subtitleKey: 'cards_subtitle' },
-                policies: { titleKey: 'policies', subtitleKey: 'policies_subtitle' },
-                api: { titleKey: 'api', subtitleKey: 'api_subtitle' }
+            // Update page title
+            const titleMap = {
+                home: { title: translations[currentLanguage].home, subtitle: translations[currentLanguage].home_subtitle },
+                transactions: { title: translations[currentLanguage].transactions, subtitle: "すべての取引を表示" },
+                settings: { title: translations[currentLanguage].settings, subtitle: "アカウント設定を管理" }
             };
             
-            const pageInfo = titles[viewName];
-            document.getElementById('page-title').textContent = i18n[currentLang][pageInfo.titleKey];
-            document.getElementById('page-subtitle').textContent = i18n[currentLang][pageInfo.subtitleKey];
-        }
-
-        // Language switching
-        function switchLanguage(lang) {
-            currentLang = lang;
-            
-            // Update language toggle buttons
-            document.getElementById('lang-jp').classList.toggle('active', lang === 'jp');
-            document.getElementById('lang-en').classList.toggle('active', lang === 'en');
-            
-            // Update all translatable elements
-            document.querySelectorAll('[data-i18n]').forEach(element => {
-                const key = element.getAttribute('data-i18n');
-                if (i18n[lang][key]) {
-                    element.textContent = i18n[lang][key];
-                }
-            });
-            
-            // Update placeholders
-            document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
-                const key = element.getAttribute('data-i18n-placeholder');
-                if (i18n[lang][key]) {
-                    element.placeholder = i18n[lang][key];
-                }
-            });
-            
-            // Update document language
-            document.documentElement.lang = lang;
-        }
-
-        // Toggle card settings visibility
-        document.addEventListener('change', function(e) {
-            if (e.target.id === 'issue-card-toggle') {
-                const cardSettings = document.getElementById('card-settings');
-                cardSettings.style.display = e.target.checked ? 'block' : 'none';
+            if (titleMap[viewName]) {
+                document.getElementById('page-title').textContent = titleMap[viewName].title;
+                document.getElementById('page-subtitle').textContent = titleMap[viewName].subtitle;
             }
-        });
+        }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set initial language
-            switchLanguage(currentLang);
+        // Mobile sidebar
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
             
-            // Setup interactive elements
-            setupSliders();
-            setupCurrencyOptions();
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('hidden');
+        }
+
+        // Card details accordion
+        function toggleCardDetails(cardElement) {
+            const accordionContent = cardElement.querySelector('.accordion-content');
+            const expandIcon = cardElement.querySelector('.expand-icon');
             
-            // Auto-update card nickname when agent name changes
-            document.getElementById('agent-name')?.addEventListener('input', updateCardNickname);
-        });
+            const isExpanded = accordionContent.classList.contains('expanded');
+            
+            // Close all other accordions
+            document.querySelectorAll('.accordion-content').forEach(content => {
+                content.classList.remove('expanded');
+            });
+            document.querySelectorAll('.expand-icon').forEach(icon => {
+                icon.style.transform = 'rotate(0deg)';
+            });
+            
+            // Toggle current accordion
+            if (!isExpanded) {
+                accordionContent.classList.add('expanded');
+                expandIcon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // Inline editing
+        function enableInlineEdit(event, element) {
+            event.stopPropagation();
+            
+            const currentValue = element.getAttribute('data-current');
+            const maxValue = element.getAttribute('data-max');
+            
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.value = currentValue;
+            input.className = 'inline-edit-input';
+            input.style.width = '120px';
+            
+            input.addEventListener('blur', function() {
+                const newValue = parseInt(this.value);
+                if (newValue && newValue <= parseInt(maxValue)) {
+                    element.setAttribute('data-current', newValue);
+                    element.textContent = '¥' + newValue.toLocaleString();
+                    
+                    // Update progress bar
+                    const progressBar = element.closest('.card-row').querySelector('.progress-bar');
+                    const percentage = (newValue / parseInt(maxValue)) * 100;
+                    progressBar.style.width = percentage + '%';
+                } else {
+                    element.textContent = '¥' + parseInt(currentValue).toLocaleString();
+                }
+                element.style.display = 'inline';
+            });
+            
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    this.blur();
+                }
+            });
+            
+            element.style.display = 'none';
+            element.parentNode.insertBefore(input, element.nextSibling);
+            input.focus();
+            input.select();
+        }
+
+        // Card Issuance Modal
+        function openCardIssuanceModal() {
+            document.getElementById('card-issuance-modal').classList.add('active');
+            currentStep = 1;
+            updateStepIndicators();
+            resetModal();
+        }
+
+        function closeCardIssuanceModal() {
+            document.getElementById('card-issuance-modal').classList.remove('active');
+            resetModal();
+        }
+
+        function resetModal() {
+            currentStep = 1;
+            
+            // Reset form
+            document.getElementById('card-name-input').value = '';
+            document.getElementById('agent-name-input').value = '';
+            document.getElementById('monthly-limit-slider').value = 200000;
+            document.getElementById('monthly-limit-input').value = 200000;
+            document.getElementById('transaction-limit-input').value = 50000;
+            document.getElementById('approval-threshold').value = 50000;
+            
+            // Reset currency selection
+            document.querySelectorAll('input[name="currency"]').forEach(radio => {
+                radio.checked = radio.value === 'JPY';
+            });
+            updateCurrencySelection();
+            
+            // Reset steps
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.remove('active', 'prev');
+            });
+            document.getElementById('step-1-content').classList.add('active');
+            
+            updateStepIndicators();
+        }
+
+        function nextStep() {
+            if (currentStep === 1) {
+                // Validate step 1
+                const cardName = document.getElementById('card-name-input').value.trim();
+                const agentName = document.getElementById('agent-name-input').value.trim();
+                
+                if (!cardName || !agentName) {
+                    alert('カード名と渡す先を入力してください');
+                    return;
+                }
+                
+                currentStep = 2;
+                showStep(2);
+            }
+        }
+
+        function previousStep() {
+            if (currentStep === 2) {
+                currentStep = 1;
+                showStep(1);
+            }
+        }
+
+        function showStep(step) {
+            // Update content visibility
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            document.getElementById(`step-${step}-content`).classList.add('active');
+            updateStepIndicators();
+        }
+
+        function updateStepIndicators() {
+            // Update step indicators
+            for (let i = 1; i <= 2; i++) {
+                const indicator = document.getElementById(`step-${i}-indicator`);
+                const circle = indicator.querySelector('div');
+                const text = indicator.querySelector('span');
+                
+                if (i <= currentStep) {
+                    circle.className = 'w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold';
+                    text.className = 'text-sm font-medium text-primary';
+                } else {
+                    circle.className = 'w-8 h-8 rounded-full bg-gray-700 text-gray-400 flex items-center justify-center text-sm font-bold';
+                    text.className = 'text-sm font-medium text-gray-400';
+                }
+            }
+            
+            // Update buttons
+            document.getElementById('back-button').style.display = currentStep > 1 ? 'block' : 'none';
+            document.getElementById('next-button').style.display = currentStep < 2 ? 'block' : 'none';
+            document.getElementById('issue-button').style.display = currentStep === 2 ? 'block' : 'none';
+        }
+
+        function issueCard() {
+            // Collect form data
+            const cardName = document.getElementById('card-name-input').value.trim();
+            const agentName = document.getElementById('agent-name-input').value.trim();
+            const currency = document.querySelector('input[name="currency"]:checked').value;
+            const monthlyLimit = document.getElementById('monthly-limit-input').value;
+            
+            // Generate API key
+            const apiKey = generateApiKey();
+            
+            // Update success content
+            document.getElementById('success-card-name').textContent = cardName;
+            document.getElementById('success-agent-name').textContent = agentName;
+            document.getElementById('success-monthly-limit').textContent = 
+                (currency === 'JPY' ? '¥' : currency === 'USD' ? '$' : 'R$') + parseInt(monthlyLimit).toLocaleString();
+            document.getElementById('generated-api-key').value = apiKey;
+            
+            // Show success step
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById('success-content').classList.add('active');
+            
+            // Update buttons
+            document.getElementById('back-button').style.display = 'none';
+            document.getElementById('next-button').style.display = 'none';
+            document.getElementById('issue-button').style.display = 'none';
+            document.getElementById('done-button').style.display = 'block';
+            
+            // Add card to list (this would normally be handled by backend)
+            addCardToList({
+                name: cardName,
+                agent: agentName,
+                currency: currency,
+                monthlyLimit: monthlyLimit,
+                currentUsage: 0,
+                status: 'active',
+                apiKey: apiKey
+            });
+        }
+
+        function generateApiKey() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let result = 'osaifu_live_demo_';
+            for (let i = 0; i < 24; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        function addCardToList(cardData) {
+            const cardCount = document.getElementById('card-count');
+            const currentCount = parseInt(cardCount.textContent);
+            cardCount.textContent = currentCount + 1;
+            
+            // In a real application, you would add the card to the list and refresh the view
+            console.log('Card added:', cardData);
+        }
+
+        function copyApiKey() {
+            const apiKeyInput = document.getElementById('generated-api-key');
+            apiKeyInput.select();
+            document.execCommand('copy');
+            
+            // Show feedback
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = 'コピー完了！';
+            button.classList.add('bg-green-600');
+            button.classList.remove('bg-primary');
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.classList.remove('bg-green-600');
+                button.classList.add('bg-primary');
+            }, 2000);
+        }
+
+        // Initialize sliders
+        function initializeSliders() {
+            const monthlySlider = document.getElementById('monthly-limit-slider');
+            const monthlyInput = document.getElementById('monthly-limit-input');
+            
+            if (monthlySlider && monthlyInput) {
+                monthlySlider.addEventListener('input', function() {
+                    monthlyInput.value = this.value;
+                });
+                
+                monthlyInput.addEventListener('input', function() {
+                    monthlySlider.value = this.value;
+                });
+            }
+        }
+
+        // Initialize currency selection
+        function initializeCurrencySelection() {
+            document.querySelectorAll('input[name="currency"]').forEach(radio => {
+                radio.addEventListener('change', updateCurrencySelection);
+            });
+        }
+
+        function updateCurrencySelection() {
+            const selected = document.querySelector('input[name="currency"]:checked');
+            document.querySelectorAll('.currency-option').forEach(option => {
+                option.classList.remove('border-primary', 'bg-primary/10');
+                option.classList.add('border-gray-700');
+            });
+            
+            if (selected) {
+                const option = selected.nextElementSibling;
+                option.classList.remove('border-gray-700');
+                option.classList.add('border-primary', 'bg-primary/10');
+            }
+        }
     </script>
 </body>
 </html>
