@@ -784,18 +784,7 @@ OSAIFU_CARD_ID=card_xxxxx</code></pre>
             btn.disabled = true;
             btn.textContent = 'Sending...';
 
-            const formData = new FormData();
-            formData.append('email', document.getElementById('wl-email').value);
-            formData.append('name', document.getElementById('wl-name').value);
-            formData.append('company', document.getElementById('wl-company').value);
-            formData.append('useCase', document.getElementById('wl-usecase').value);
-            formData.append('spend', document.getElementById('wl-spend').value);
-            formData.append('agents', document.getElementById('wl-agents').value);
-            formData.append('_subject', 'New osAIfu Waitlist Signup');
-            formData.append('_captcha', 'false');
-            formData.append('_template', 'table');
-
-            // Save to JSONBin (viewable dashboard) + email via Formsubmit
+            // Collect form data
             const jsonData = {
                 email: document.getElementById('wl-email').value,
                 name: document.getElementById('wl-name').value,
@@ -811,14 +800,13 @@ OSAIFU_CARD_ID=card_xxxxx</code></pre>
             existing.push(jsonData);
             localStorage.setItem('osaifu_waitlist', JSON.stringify(existing));
 
-            // Send email notification via Formsubmit
+            // Send via Web3Forms
             const formData2 = new FormData();
+            formData2.append('access_key', 'fb5b886d-dbed-46dd-b707-86d896481b91');
+            formData2.append('subject', 'New osAIfu Waitlist Signup');
             Object.keys(jsonData).forEach(k => formData2.append(k, jsonData[k]));
-            formData2.append('_subject', 'New osAIfu Waitlist Signup');
-            formData2.append('_captcha', 'false');
-            formData2.append('_template', 'table');
 
-            fetch('https://formsubmit.co/ajax/info@andes.global', {
+            fetch('https://api.web3forms.com/submit', {
                 method: 'POST',
                 body: formData2
             })
