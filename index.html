@@ -304,182 +304,28 @@ OSAIFU_CARD_ID=card_xxxxx</code></pre>
 
     <!-- Dashboard Preview -->
     <section class="container mx-auto px-6 py-20">
-        <div class="text-center mb-16">
+        <div class="text-center mb-12">
             <h2 class="text-4xl lg:text-5xl font-bold mb-6">
-                <span data-jp="リアルタイム監視ダッシュボード" data-en="Real-time Monitoring Dashboard">リアルタイム監視ダッシュボード</span>
+                <span data-jp="リアルタイム監視ダッシュボード" data-en="Real-time Monitoring Dashboard">Real-time Monitoring Dashboard</span>
             </h2>
             <p class="text-xl text-gray-300">
-                <span data-jp="すべての取引を監視し、上限超過は自動ブロック" 
-                      data-en="Monitor all transactions and automatically block limit overruns">
-                    すべての取引を監視し、上限超過は自動ブロック
-                </span>
+                <span data-jp="すべての取引を監視し、上限超過は自動ブロック" data-en="Monitor all transactions and automatically block limit overruns">Monitor all transactions and automatically block limit overruns</span>
             </p>
         </div>
 
-        <div class="dashboard-mockup p-8 rounded-2xl">
-            <!-- Mini Sidebar + Dashboard Layout -->
-            <div class="flex gap-6 mb-8">
-                <!-- Mini Sidebar -->
-                <div class="w-48 glass p-4 rounded-lg">
-                    <div class="space-y-3">
-                        <div class="flex items-center space-x-3 text-primary font-semibold">
-                            <span>🏠</span>
-                            <span class="text-sm">
-                                <span data-jp="ホーム" data-en="Home">ホーム</span>
-                            </span>
-                        </div>
-                        <div class="flex items-center space-x-3 text-gray-400">
-                            <span>💳</span>
-                            <span class="text-sm">
-                                <span data-jp="発行する" data-en="Issue Cards">発行する</span>
-                            </span>
-                        </div>
-                        <div class="flex items-center space-x-3 text-gray-400">
-                            <span>📋</span>
-                            <span class="text-sm">
-                                <span data-jp="取引履歴" data-en="Transactions">取引履歴</span>
-                            </span>
-                        </div>
-                        <div class="flex items-center space-x-3 text-gray-400">
-                            <span>⚙️</span>
-                            <span class="text-sm">
-                                <span data-jp="設定" data-en="Settings">設定</span>
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <!-- Mini Card Visual -->
-                    <div class="mt-6 p-3 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg">
-                        <div class="text-white text-xs mb-2">Agent Card</div>
-                        <div class="text-white text-sm font-bold">OpenClaw-Agent</div>
-                        <div class="text-white/70 text-xs mt-2">$850 / $2,500</div>
-                        <div class="w-full bg-white/30 rounded-full h-1 mt-1">
-                            <div class="bg-white h-1 rounded-full w-1/3"></div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Main Dashboard Area -->
-                <div class="flex-1">
-            </div>
-            
-            <!-- Dashboard Header -->
-            <div class="flex justify-between items-center mb-8">
-                <h3 class="text-2xl font-bold text-white">
-                    <span data-jp="osAIfu ダッシュボード" data-en="osAIfu Dashboard">osAIfu ダッシュボード</span>
-                </h3>
-                <div class="flex space-x-4">
-                    <div class="text-center">
-                        <div class="text-2xl font-bold text-green-400">$850</div>
-                        <div class="text-sm text-gray-400">
-                            <span data-jp="今月の利用額" data-en="This Month">今月の利用額</span>
-                        </div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-2xl font-bold text-primary">$1,650</div>
-                        <div class="text-sm text-gray-400">
-                            <span data-jp="残り上限" data-en="Remaining Limit">残り上限</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- Dashboard iframe preview -->
+        <div class="max-w-5xl mx-auto rounded-2xl overflow-hidden border border-gray-700/50 shadow-2xl shadow-primary/10" style="height: 500px;">
+            <iframe src="dashboard.html" class="w-full h-full" style="pointer-events: none; transform: scale(1); transform-origin: top left;"></iframe>
+        </div>
 
-            <!-- Recent Transactions -->
-            <h4 class="text-lg font-semibold text-white mb-4">
-                <span data-jp="最近の取引" data-en="Recent Transactions">最近の取引</span>
-            </h4>
-            <div class="space-y-3">
-                <div class="transaction-item p-4 rounded-lg flex justify-between items-center">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                            <span class="text-white font-bold">G</span>
-                        </div>
-                        <div>
-                            <div class="font-medium text-white">Google Ads</div>
-                            <div class="text-sm text-gray-400">OpenClaw-Agent • 2分前</div>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <div class="font-bold text-white">$150</div>
-                        <div class="text-sm text-green-400">
-                            <span data-jp="承認済み" data-en="Approved">承認済み</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="transaction-item p-4 rounded-lg flex justify-between items-center">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center">
-                            <span class="text-white font-bold">N</span>
-                        </div>
-                        <div>
-                            <div class="font-medium text-white">Notion Pro</div>
-                            <div class="text-sm text-gray-400">OpenClaw-Agent • 1時間前</div>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <div class="font-bold text-white">$24</div>
-                        <div class="text-sm text-green-400">
-                            <span data-jp="承認済み" data-en="Approved">承認済み</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="transaction-item p-4 rounded-lg flex justify-between items-center">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center">
-                            <span class="text-white font-bold">A</span>
-                        </div>
-                        <div>
-                            <div class="font-medium text-white">AWS Lambda</div>
-                            <div class="text-sm text-gray-400">OpenClaw-Agent • 3時間前</div>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <div class="font-bold text-white">$8.50</div>
-                        <div class="text-sm text-green-400">
-                            <span data-jp="承認済み" data-en="Approved">承認済み</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-8 grid grid-cols-3 gap-4 text-center">
-                <div class="glass p-4 rounded-lg">
-                    <div class="text-primary text-2xl mb-2">📊</div>
-                    <div class="text-sm text-gray-400">
-                        <span data-jp="リアルタイムで全取引を監視" data-en="Monitor all transactions in real-time">リアルタイムで全取引を監視</span>
-                    </div>
-                </div>
-                <div class="glass p-4 rounded-lg">
-                    <div class="text-red-400 text-2xl mb-2">🛑</div>
-                    <div class="text-sm text-gray-400">
-                        <span data-jp="上限超過は自動ブロック" data-en="Automatic blocking of limit overruns">上限超過は自動ブロック</span>
-                    </div>
-                </div>
-                <div class="glass p-4 rounded-lg">
-                    <div class="text-yellow-400 text-2xl mb-2">⚡</div>
-                    <div class="text-sm text-gray-400">
-                        <span data-jp="不審な決済は即通知" data-en="Instant alerts for suspicious payments">不審な決済は即通知</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-8 text-center">
-                <a href="dashboard.html" 
-                   class="inline-flex items-center space-x-3 bg-primary text-white px-8 py-4 rounded-lg hover:bg-blue-600 transition-colors font-semibold text-lg shadow-lg">
-                    <span data-jp="デモを試す" data-en="Try Dashboard Demo">Try Dashboard Demo</span>
-                    <span>→</span>
-                </a>
-                <p class="text-gray-400 text-sm mt-4">
-                    <span data-jp="リアルタイムで全ての取引を監視。上限設定、カテゴリ制限、即時凍結。" 
-                          data-en="Monitor all transactions in real-time. Limit settings, category restrictions, instant freeze.">
-                        リアルタイムで全ての取引を監視。上限設定、カテゴリ制限、即時凍結。
-                    </span>
-                </p>
-            </div>
-                </div>
-            </div>
+        <div class="text-center mt-8">
+            <a href="dashboard.html" class="inline-flex items-center space-x-3 bg-primary text-white px-8 py-4 rounded-lg hover:bg-blue-600 transition-colors font-semibold text-lg shadow-lg">
+                <span data-jp="デモを試す" data-en="Try Dashboard Demo">Try Dashboard Demo</span>
+                <span>→</span>
+            </a>
+            <p class="text-gray-400 text-sm mt-4">
+                <span data-jp="リアルタイムで全ての取引を監視。上限設定、カテゴリ制限、即時凍結。" data-en="Monitor all transactions in real-time. Limit settings, category restrictions, instant freeze.">Monitor all transactions in real-time. Limit settings, category restrictions, instant freeze.</span>
+            </p>
         </div>
     </section>
 
