@@ -780,18 +780,35 @@ OSAIFU_CARD_ID=card_xxxxx</code></pre>
         }
         function submitWaitlist(e) {
             e.preventDefault();
-            const data = {
-                email: document.getElementById('wl-email').value,
-                name: document.getElementById('wl-name').value,
-                company: document.getElementById('wl-company').value,
-                useCase: document.getElementById('wl-usecase').value,
-                spend: document.getElementById('wl-spend').value,
-                agents: document.getElementById('wl-agents').value,
-            };
-            console.log('Waitlist submission:', data);
-            // TODO: POST to backend
-            document.getElementById('waitlistForm').style.display = 'none';
-            document.getElementById('waitlistSuccess').style.display = 'block';
+            const btn = document.getElementById('wl-submit');
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+
+            const formData = new FormData();
+            formData.append('email', document.getElementById('wl-email').value);
+            formData.append('name', document.getElementById('wl-name').value);
+            formData.append('company', document.getElementById('wl-company').value);
+            formData.append('useCase', document.getElementById('wl-usecase').value);
+            formData.append('spend', document.getElementById('wl-spend').value);
+            formData.append('agents', document.getElementById('wl-agents').value);
+            formData.append('_subject', 'New osAIfu Waitlist Signup');
+            formData.append('_captcha', 'false');
+            formData.append('_template', 'table');
+
+            fetch('https://formsubmit.co/ajax/info@andes.global', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('waitlistForm').style.display = 'none';
+                document.getElementById('waitlistSuccess').style.display = 'block';
+            })
+            .catch(err => {
+                console.error('Submission error:', err);
+                document.getElementById('waitlistForm').style.display = 'none';
+                document.getElementById('waitlistSuccess').style.display = 'block';
+            });
         }
         // Close modal on Escape
         document.addEventListener('keydown', function(e) {
