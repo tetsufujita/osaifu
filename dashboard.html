@@ -40,6 +40,60 @@
             animation: cardFloat 3s ease-in-out infinite;
         }
         
+        /* 3D Card Styling */
+        .card-3d {
+            background: linear-gradient(135deg, #635BFF 0%, #9C7EFF 100%);
+            border-radius: 16px;
+            padding: 24px;
+            color: white;
+            width: 340px;
+            height: 200px;
+            position: relative;
+            transform: perspective(1000px) rotateY(-5deg) rotateX(5deg);
+            transition: transform 0.5s ease;
+            box-shadow: 0 20px 60px rgba(99, 91, 255, 0.3);
+        }
+        .card-3d:hover {
+            transform: perspective(1000px) rotateY(5deg) rotateX(-2deg);
+        }
+        
+        .card-3d-appear {
+            animation: card3dAppear 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        @keyframes card3dAppear {
+            0% { 
+                transform: perspective(1000px) rotateY(90deg) rotateX(45deg) scale(0.3);
+                opacity: 0;
+            }
+            50% {
+                transform: perspective(1000px) rotateY(-10deg) rotateX(10deg) scale(1.05);
+                opacity: 0.8;
+            }
+            100% { 
+                transform: perspective(1000px) rotateY(-5deg) rotateX(5deg) scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .card-details-expanded {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.3s ease;
+            opacity: 0;
+        }
+        .card-details-expanded.active {
+            max-height: 800px;
+            opacity: 1;
+        }
+        
+        .copy-button {
+            transition: all 0.2s ease;
+        }
+        .copy-button:hover {
+            transform: scale(1.05);
+        }
+        
         @keyframes cardFloat {
             0%, 100% { transform: perspective(1000px) rotateX(5deg) rotateY(-2deg) translateY(0px); }
             50% { transform: perspective(1000px) rotateX(5deg) rotateY(-2deg) translateY(-5px); }
@@ -165,6 +219,16 @@
             }
             .sidebar.open {
                 transform: translateX(0);
+            }
+            
+            .card-3d {
+                width: 280px;
+                height: 160px;
+                padding: 16px;
+            }
+            
+            .card-details-expanded .grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -323,39 +387,91 @@
                                             </svg>
                                         </div>
                                     </div>
-                                    <div class="accordion-content mt-8">
-                                        <div class="bg-gray-800/30 rounded-xl p-6 grid md:grid-cols-2 gap-6">
-                                            <div class="space-y-4">
-                                                <h4 class="font-semibold text-primary" data-i18n="card_details">カード詳細</h4>
-                                                <div class="space-y-2 text-sm">
-                                                    <div class="flex justify-between">
-                                                        <span class="text-gray-400">API Key:</span>
-                                                        <span class="font-mono text-xs">osaifu_live_****1234</span>
-                                                    </div>
-                                                    <div class="flex justify-between">
-                                                        <span class="text-gray-400" data-i18n="currency">通貨:</span>
-                                                        <span>JPY</span>
-                                                    </div>
-                                                    <div class="flex justify-between">
-                                                        <span class="text-gray-400" data-i18n="created">作成日:</span>
-                                                        <span>2024-02-15</span>
+                                    <div class="card-details-expanded mt-8">
+                                        <div class="bg-gray-800/30 rounded-xl p-6 grid lg:grid-cols-2 gap-8">
+                                            <!-- 3D Card Visual -->
+                                            <div class="flex justify-center lg:justify-start">
+                                                <div class="card-3d">
+                                                    <div class="absolute inset-0 flex flex-col justify-between">
+                                                        <div class="flex justify-between items-start">
+                                                            <div class="text-white">
+                                                                <div class="text-sm opacity-80">osAIfu Card</div>
+                                                                <div class="font-bold text-lg">広告運用カード</div>
+                                                            </div>
+                                                            <div class="text-white text-xl font-bold">VISA</div>
+                                                        </div>
+                                                        <div class="flex justify-between items-end text-white">
+                                                            <div>
+                                                                <div class="text-sm font-mono">**** **** **** 1234</div>
+                                                                <div class="text-xs opacity-80 mt-1">12/28</div>
+                                                            </div>
+                                                            <div class="text-right">
+                                                                <div class="text-xs opacity-80">Monthly</div>
+                                                                <div class="font-bold">¥400,000</div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="space-y-4">
-                                                <h4 class="font-semibold text-primary" data-i18n="usage_rules">利用ルール</h4>
-                                                <div class="space-y-2 text-sm">
-                                                    <div class="flex justify-between">
-                                                        <span class="text-gray-400" data-i18n="per_transaction">1回上限:</span>
-                                                        <span>¥50,000</span>
+                                            
+                                            <!-- Card Details -->
+                                            <div class="space-y-6">
+                                                <div class="space-y-4">
+                                                    <h4 class="font-semibold text-primary" data-i18n="card_details">カード詳細</h4>
+                                                    <div class="space-y-3 text-sm">
+                                                        <div class="flex justify-between items-center">
+                                                            <span class="text-gray-400">カード番号:</span>
+                                                            <div class="flex items-center space-x-2">
+                                                                <span id="card-number-masked" class="font-mono">**** **** **** 1234</span>
+                                                                <button onclick="toggleCardNumber(this, '4532 1234 5678 1234')" class="text-primary hover:text-primary/80 text-xs underline">表示</button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex justify-between">
+                                                            <span class="text-gray-400">有効期限:</span>
+                                                            <span class="font-mono">12/28</span>
+                                                        </div>
+                                                        <div class="flex justify-between items-center">
+                                                            <span class="text-gray-400">CVC:</span>
+                                                            <div class="flex items-center space-x-2">
+                                                                <span id="cvc-masked" class="font-mono">***</span>
+                                                                <button onclick="toggleCVC(this, '123')" class="text-primary hover:text-primary/80 text-xs underline">表示</button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex justify-between items-center">
+                                                            <span class="text-gray-400">Card ID:</span>
+                                                            <div class="flex items-center space-x-2">
+                                                                <span class="font-mono text-xs">card_ad1234567890</span>
+                                                                <button onclick="copyTextToClipboard('card_ad1234567890')" class="copy-button bg-primary hover:bg-primary/90 text-white px-2 py-1 rounded text-xs">
+                                                                    <span data-i18n="copy">コピー</span>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex justify-between">
+                                                            <span class="text-gray-400" data-i18n="currency">通貨:</span>
+                                                            <span>JPY</span>
+                                                        </div>
+                                                        <div class="flex justify-between">
+                                                            <span class="text-gray-400" data-i18n="created">作成日:</span>
+                                                            <span>2024-02-15</span>
+                                                        </div>
                                                     </div>
-                                                    <div class="flex justify-between">
-                                                        <span class="text-gray-400" data-i18n="categories">カテゴリ:</span>
-                                                        <span class="text-xs">広告, クラウド</span>
-                                                    </div>
-                                                    <div class="flex justify-between">
-                                                        <span class="text-gray-400" data-i18n="approval_limit">承認必要:</span>
-                                                        <span>¥50,000+</span>
+                                                </div>
+                                                
+                                                <div class="space-y-4">
+                                                    <h4 class="font-semibold text-primary" data-i18n="usage_rules">利用ルール</h4>
+                                                    <div class="space-y-2 text-sm">
+                                                        <div class="flex justify-between">
+                                                            <span class="text-gray-400" data-i18n="per_transaction">1回上限:</span>
+                                                            <span>¥50,000</span>
+                                                        </div>
+                                                        <div class="flex justify-between">
+                                                            <span class="text-gray-400" data-i18n="categories">カテゴリ:</span>
+                                                            <span class="text-xs">広告, クラウド</span>
+                                                        </div>
+                                                        <div class="flex justify-between">
+                                                            <span class="text-gray-400" data-i18n="approval_limit">承認必要:</span>
+                                                            <span>¥50,000+</span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -488,12 +604,21 @@
                                         </thead>
                                         <tbody class="divide-y divide-gray-800/30">
                                             <tr class="hover:bg-gray-800/20 transition-colors">
-                                                <td class="py-6 px-8 text-sm text-gray-300">2024-02-17 09:30</td>
+                                                <td class="py-6 px-8 text-sm text-gray-300">2024-02-17 08:23</td>
                                                 <td class="py-6 px-8 text-sm font-medium">広告運用カード</td>
                                                 <td class="py-6 px-8 text-sm">Google Ads</td>
                                                 <td class="py-6 px-8 text-sm font-mono text-lg font-bold">¥45,000</td>
                                                 <td class="py-6 px-8">
-                                                    <span class="px-3 py-1 bg-green-900/30 text-green-400 rounded-full text-xs font-medium" data-i18n="approved">承認</span>
+                                                    <span class="px-3 py-1 bg-green-900/30 text-green-400 rounded-full text-xs font-medium" data-i18n="approved">承認済み</span>
+                                                </td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-800/20 transition-colors">
+                                                <td class="py-6 px-8 text-sm text-gray-300">2024-02-17 04:12</td>
+                                                <td class="py-6 px-8 text-sm font-medium">データ収集カード</td>
+                                                <td class="py-6 px-8 text-sm text-gray-500">Unknown</td>
+                                                <td class="py-6 px-8 text-sm font-mono text-lg font-bold text-red-400">¥89,000</td>
+                                                <td class="py-6 px-8">
+                                                    <span class="px-3 py-1 bg-red-900/30 text-red-400 rounded-full text-xs font-medium" data-i18n="blocked">ブロック</span>
                                                 </td>
                                             </tr>
                                             <tr class="hover:bg-gray-800/20 transition-colors">
@@ -502,16 +627,7 @@
                                                 <td class="py-6 px-8 text-sm">Notion</td>
                                                 <td class="py-6 px-8 text-sm font-mono text-lg font-bold">¥3,200</td>
                                                 <td class="py-6 px-8">
-                                                    <span class="px-3 py-1 bg-green-900/30 text-green-400 rounded-full text-xs font-medium" data-i18n="approved">承認</span>
-                                                </td>
-                                            </tr>
-                                            <tr class="hover:bg-gray-800/20 transition-colors">
-                                                <td class="py-6 px-8 text-sm text-gray-300">2024-02-17 02:45</td>
-                                                <td class="py-6 px-8 text-sm font-medium">データ分析カード</td>
-                                                <td class="py-6 px-8 text-sm text-gray-500">不明な加盟店</td>
-                                                <td class="py-6 px-8 text-sm font-mono text-lg font-bold text-red-400">¥89,000</td>
-                                                <td class="py-6 px-8">
-                                                    <span class="px-3 py-1 bg-red-900/30 text-red-400 rounded-full text-xs font-medium" data-i18n="blocked">ブロック</span>
+                                                    <span class="px-3 py-1 bg-green-900/30 text-green-400 rounded-full text-xs font-medium" data-i18n="approved">承認済み</span>
                                                 </td>
                                             </tr>
                                             <tr class="hover:bg-gray-800/20 transition-colors">
@@ -520,7 +636,7 @@
                                                 <td class="py-6 px-8 text-sm">Facebook Ads</td>
                                                 <td class="py-6 px-8 text-sm font-mono text-lg font-bold">¥28,500</td>
                                                 <td class="py-6 px-8">
-                                                    <span class="px-3 py-1 bg-green-900/30 text-green-400 rounded-full text-xs font-medium" data-i18n="approved">承認</span>
+                                                    <span class="px-3 py-1 bg-green-900/30 text-green-400 rounded-full text-xs font-medium" data-i18n="approved">承認済み</span>
                                                 </td>
                                             </tr>
                                             <tr class="hover:bg-gray-800/20 transition-colors">
@@ -529,7 +645,7 @@
                                                 <td class="py-6 px-8 text-sm">AWS</td>
                                                 <td class="py-6 px-8 text-sm font-mono text-lg font-bold">¥12,800</td>
                                                 <td class="py-6 px-8">
-                                                    <span class="px-3 py-1 bg-green-900/30 text-green-400 rounded-full text-xs font-medium" data-i18n="approved">承認</span>
+                                                    <span class="px-3 py-1 bg-green-900/30 text-green-400 rounded-full text-xs font-medium" data-i18n="approved">承認済み</span>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -663,7 +779,7 @@
                 </div>
                 
                 <!-- Step Progress -->
-                <div class="flex items-center space-x-4 mb-2">
+                <div class="flex items-center space-x-2 mb-2">
                     <div id="step-1-indicator" class="flex items-center space-x-2">
                         <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold">1</div>
                         <span class="text-sm font-medium text-primary" data-i18n="card_settings">カード設定</span>
@@ -672,6 +788,11 @@
                     <div id="step-2-indicator" class="flex items-center space-x-2">
                         <div class="w-8 h-8 rounded-full bg-gray-700 text-gray-400 flex items-center justify-center text-sm font-bold">2</div>
                         <span class="text-sm font-medium text-gray-400" data-i18n="usage_rules">利用ルール</span>
+                    </div>
+                    <div class="h-px bg-gray-700 flex-1"></div>
+                    <div id="step-3-indicator" class="flex items-center space-x-2">
+                        <div class="w-8 h-8 rounded-full bg-gray-700 text-gray-400 flex items-center justify-center text-sm font-bold">3</div>
+                        <span class="text-sm font-medium text-gray-400" data-i18n="issue_complete">発行完了</span>
                     </div>
                 </div>
             </div>
@@ -778,24 +899,25 @@
                     </div>
                 </div>
 
-                <!-- Success Step -->
-                <div id="success-content" class="step-content text-center">
-                    <div class="space-y-8">
-                        <!-- Card Visual -->
+                <!-- Step 3: Issue Complete -->
+                <div id="step-3-content" class="step-content">
+                    <div class="space-y-8 text-center">
+                        <h3 class="text-2xl font-bold text-green-400 mb-8" data-i18n="issue_complete_title">発行完了 — エージェント接続ガイド</h3>
+                        
+                        <!-- 3D Card Visual -->
                         <div class="flex justify-center mb-8">
-                            <div class="card-visual card-appear w-80 h-48 rounded-2xl relative overflow-hidden shadow-2xl">
-                                <div class="absolute inset-0 p-6 flex flex-col justify-between">
+                            <div class="card-3d card-3d-appear relative">
+                                <div class="absolute inset-0 flex flex-col justify-between">
                                     <div class="flex justify-between items-start">
                                         <div class="text-white">
                                             <div class="text-sm opacity-80">osAIfu Card</div>
                                             <div class="font-bold text-lg" id="success-card-name">広告運用カード</div>
                                         </div>
-                                        <div class="text-white text-xl font-bold">VISA</div>
+                                        <div class="text-white text-2xl font-bold">VISA</div>
                                     </div>
                                     <div class="flex justify-between items-end text-white">
                                         <div>
-                                            <div class="text-xs opacity-80">Agent</div>
-                                            <div class="font-medium" id="success-agent-name">Ad-Optimizer</div>
+                                            <div class="text-xs opacity-80">**** **** **** <span id="success-card-digits">1234</span></div>
                                         </div>
                                         <div class="text-right">
                                             <div class="text-xs opacity-80">Monthly Limit</div>
@@ -806,38 +928,73 @@
                             </div>
                         </div>
                         
+                        <!-- Connection Guide -->
+                        <div class="bg-gray-800/30 border border-gray-700 rounded-xl p-8 text-left">
+                            <h4 class="text-xl font-bold mb-6 text-center" data-i18n="agent_connection_guide">このカードをAIエージェントに接続する方法</h4>
+                            
+                            <div class="space-y-6">
+                                <!-- Step 1: API Key -->
+                                <div class="border-b border-gray-700/50 pb-6">
+                                    <h5 class="font-semibold text-primary mb-3" data-i18n="connection_step1">ステップ1: APIキーをエージェントに設定</h5>
+                                    <div class="bg-gray-900/50 border border-gray-700 rounded-lg p-4">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <span class="text-sm font-mono">OSAIFU_API_KEY=<span id="api-key-display">sk_live_xxxxxxxxxxxxx</span></span>
+                                            <button onclick="copyTextToClipboard(document.getElementById('api-key-display').textContent)" class="copy-button bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-medium text-sm transition-all">
+                                                <span data-i18n="copy">コピー</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Step 2: Card ID -->
+                                <div class="border-b border-gray-700/50 pb-6">
+                                    <h5 class="font-semibold text-primary mb-3" data-i18n="connection_step2">ステップ2: カードIDを指定して決済</h5>
+                                    <div class="bg-gray-900/50 border border-gray-700 rounded-lg p-4">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <span class="text-sm font-mono">card_id: <span id="card-id-display">card_xxxxxxxx</span></span>
+                                            <button onclick="copyTextToClipboard(document.getElementById('card-id-display').textContent)" class="copy-button bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-medium text-sm transition-all">
+                                                <span data-i18n="copy">コピー</span>
+                                            </button>
+                                        </div>
+                                        <p class="text-xs text-gray-400 mt-3" data-i18n="card_rules_desc">
+                                            エージェントがosAIfu APIに決済リクエストを送ると、<br/>
+                                            このカードのルール（月額上限・カテゴリ制限）に基づいて<br/>
+                                            自動で承認/ブロックされます。
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Python SDK Sample -->
+                                <div>
+                                    <h5 class="font-semibold text-primary mb-3" data-i18n="python_sdk_sample">Python SDK サンプルコード</h5>
+                                    <div class="bg-gray-900/50 border border-gray-700 rounded-lg p-4 relative">
+                                        <button onclick="copyPythonSample()" class="copy-button absolute top-3 right-3 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-medium text-xs transition-all">
+                                            <span data-i18n="copy">コピー</span>
+                                        </button>
+                                        <pre class="text-sm text-green-400 overflow-x-auto pr-16"><code id="python-sample">from osaifu import OsAifuClient
+client = OsAifuClient(api_key="sk_live_xxx")
+
+# このカードで決済
+payment = client.pay(
+    card_id="card_xxxxxxxx",
+    amount=45000,
+    merchant="Google Ads",
+    description="広告費"
+)</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <!-- Success Message -->
-                        <div class="space-y-4">
-                            <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <div class="bg-green-900/20 border border-green-500/30 rounded-xl p-6">
+                            <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
                                 </svg>
                             </div>
-                            <h3 class="text-2xl font-bold text-green-400" data-i18n="card_issued_success">カード発行完了！</h3>
-                            <p class="text-gray-400" data-i18n="setup_agent_instruction">このキーをAIエージェントに設定してください</p>
-                        </div>
-                        
-                        <!-- API Key -->
-                        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                            <label class="block text-sm font-semibold text-gray-300 mb-3">API Key</label>
-                            <div class="flex items-center space-x-3">
-                                <input id="generated-api-key" type="text" value="osaifu_live_demo_rZQRk8jK9n2P3qV7wX4mT5yU6iE8oL1s" readonly class="flex-1 bg-gray-700/50 text-white px-4 py-3 rounded-lg border border-gray-600/50 font-mono text-sm">
-                                <button onclick="copyApiKey()" class="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg font-medium transition-all" data-i18n="copy">
-                                    コピー
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Connection Instructions -->
-                        <div class="bg-gray-800/30 rounded-xl p-6 text-left">
-                            <h4 class="font-semibold mb-4" data-i18n="connection_methods">接続方法</h4>
-                            <div class="bg-gray-900/50 border border-gray-700 rounded-lg p-4">
-                                <pre class="text-sm text-green-400 overflow-x-auto"><code># OpenClawの場合
-OSAIFU_API_KEY=osaifu_live_demo_rZQRk8jK9n2P3qV7wX4mT5yU6iE8oL1s
-
-# Python SDKの場合  
-client = OsAifuClient(api_key="osaifu_live_demo_rZQRk8jK9n2P3qV7wX4mT5yU6iE8oL1s")</code></pre>
-                            </div>
+                            <h3 class="text-xl font-bold text-green-400 mb-2" data-i18n="card_issued_success">カード発行完了！</h3>
+                            <p class="text-gray-300 text-sm" data-i18n="ready_to_use">カードの準備が完了しました。上記の情報をエージェントに設定してください。</p>
                         </div>
                     </div>
                 </div>
@@ -944,7 +1101,15 @@ client = OsAifuClient(api_key="osaifu_live_demo_rZQRk8jK9n2P3qV7wX4mT5yU6iE8oL1s
                 cancel: "キャンセル",
                 next: "次へ",
                 issue_card: "発行する",
-                done: "完了"
+                done: "完了",
+                issue_complete: "発行完了",
+                issue_complete_title: "発行完了 — エージェント接続ガイド", 
+                agent_connection_guide: "このカードをAIエージェントに接続する方法",
+                connection_step1: "ステップ1: APIキーをエージェントに設定",
+                connection_step2: "ステップ2: カードIDを指定して決済",
+                card_rules_desc: "エージェントがosAIfu APIに決済リクエストを送ると、このカードのルール（月額上限・カテゴリ制限）に基づいて自動で承認/ブロックされます。",
+                python_sdk_sample: "Python SDK サンプルコード",
+                ready_to_use: "カードの準備が完了しました。上記の情報をエージェントに設定してください。"
             },
             en: {
                 home: "Home",
@@ -1019,12 +1184,22 @@ client = OsAifuClient(api_key="osaifu_live_demo_rZQRk8jK9n2P3qV7wX4mT5yU6iE8oL1s
                 cancel: "Cancel",
                 next: "Next",
                 issue_card: "Issue Card",
-                done: "Done"
+                done: "Done",
+                issue_complete: "Issue Complete",
+                issue_complete_title: "Issue Complete — Agent Connection Guide",
+                agent_connection_guide: "How to connect this card to your AI Agent",
+                connection_step1: "Step 1: Set API key in your agent",
+                connection_step2: "Step 2: Use card ID for payments",
+                card_rules_desc: "When your agent sends payment requests to osAIfu API, they will be automatically approved/blocked based on this card's rules (monthly limit, category restrictions).",
+                python_sdk_sample: "Python SDK Sample Code",
+                ready_to_use: "Your card is ready to use. Please configure the above information in your agent."
             }
         };
 
         let currentLanguage = 'jp';
         let currentStep = 1;
+        let generatedCardId = '';
+        let generatedApiKey = '';
         let cards = [];
 
         // Initialize the application
@@ -1095,14 +1270,14 @@ client = OsAifuClient(api_key="osaifu_live_demo_rZQRk8jK9n2P3qV7wX4mT5yU6iE8oL1s
 
         // Card details accordion
         function toggleCardDetails(cardElement) {
-            const accordionContent = cardElement.querySelector('.accordion-content');
+            const accordionContent = cardElement.querySelector('.card-details-expanded');
             const expandIcon = cardElement.querySelector('.expand-icon');
             
-            const isExpanded = accordionContent.classList.contains('expanded');
+            const isExpanded = accordionContent.classList.contains('active');
             
             // Close all other accordions
-            document.querySelectorAll('.accordion-content').forEach(content => {
-                content.classList.remove('expanded');
+            document.querySelectorAll('.card-details-expanded').forEach(content => {
+                content.classList.remove('active');
             });
             document.querySelectorAll('.expand-icon').forEach(icon => {
                 icon.style.transform = 'rotate(0deg)';
@@ -1110,9 +1285,57 @@ client = OsAifuClient(api_key="osaifu_live_demo_rZQRk8jK9n2P3qV7wX4mT5yU6iE8oL1s
             
             // Toggle current accordion
             if (!isExpanded) {
-                accordionContent.classList.add('expanded');
+                accordionContent.classList.add('active');
                 expandIcon.style.transform = 'rotate(180deg)';
             }
+        }
+
+        // Toggle card number visibility
+        function toggleCardNumber(button, fullNumber) {
+            const maskedSpan = button.parentElement.querySelector('#card-number-masked') || button.parentElement.querySelector('span');
+            const isRevealed = button.textContent === '隠す' || button.textContent === 'Hide';
+            
+            if (isRevealed) {
+                maskedSpan.textContent = '**** **** **** ' + fullNumber.slice(-4);
+                button.textContent = currentLanguage === 'jp' ? '表示' : 'Show';
+            } else {
+                maskedSpan.textContent = fullNumber;
+                button.textContent = currentLanguage === 'jp' ? '隠す' : 'Hide';
+                
+                // Auto-hide after 10 seconds
+                setTimeout(() => {
+                    maskedSpan.textContent = '**** **** **** ' + fullNumber.slice(-4);
+                    button.textContent = currentLanguage === 'jp' ? '表示' : 'Show';
+                }, 10000);
+            }
+        }
+
+        // Toggle CVC visibility
+        function toggleCVC(button, fullCVC) {
+            const maskedSpan = button.parentElement.querySelector('#cvc-masked') || button.parentElement.querySelector('span');
+            const isRevealed = button.textContent === '隠す' || button.textContent === 'Hide';
+            
+            if (isRevealed) {
+                maskedSpan.textContent = '***';
+                button.textContent = currentLanguage === 'jp' ? '表示' : 'Show';
+            } else {
+                maskedSpan.textContent = fullCVC;
+                button.textContent = currentLanguage === 'jp' ? '隠す' : 'Hide';
+                
+                // Auto-hide after 10 seconds
+                setTimeout(() => {
+                    maskedSpan.textContent = '***';
+                    button.textContent = currentLanguage === 'jp' ? '表示' : 'Show';
+                }, 10000);
+            }
+        }
+
+        // Copy text to clipboard with feedback
+        function copyTextToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                // Visual feedback could be added here
+                console.log('Copied: ' + text);
+            });
         }
 
         // Inline editing
@@ -1192,6 +1415,9 @@ client = OsAifuClient(api_key="osaifu_live_demo_rZQRk8jK9n2P3qV7wX4mT5yU6iE8oL1s
             });
             document.getElementById('step-1-content').classList.add('active');
             
+            // Hide step 3 button
+            document.getElementById('done-button').style.display = 'none';
+            
             updateStepIndicators();
         }
 
@@ -1212,7 +1438,10 @@ client = OsAifuClient(api_key="osaifu_live_demo_rZQRk8jK9n2P3qV7wX4mT5yU6iE8oL1s
         }
 
         function previousStep() {
-            if (currentStep === 2) {
+            if (currentStep === 3) {
+                currentStep = 2;
+                showStep(2);
+            } else if (currentStep === 2) {
                 currentStep = 1;
                 showStep(1);
             }
@@ -1230,7 +1459,7 @@ client = OsAifuClient(api_key="osaifu_live_demo_rZQRk8jK9n2P3qV7wX4mT5yU6iE8oL1s
 
         function updateStepIndicators() {
             // Update step indicators
-            for (let i = 1; i <= 2; i++) {
+            for (let i = 1; i <= 3; i++) {
                 const indicator = document.getElementById(`step-${i}-indicator`);
                 const circle = indicator.querySelector('div');
                 const text = indicator.querySelector('span');
@@ -1245,9 +1474,10 @@ client = OsAifuClient(api_key="osaifu_live_demo_rZQRk8jK9n2P3qV7wX4mT5yU6iE8oL1s
             }
             
             // Update buttons
-            document.getElementById('back-button').style.display = currentStep > 1 ? 'block' : 'none';
+            document.getElementById('back-button').style.display = currentStep > 1 && currentStep < 3 ? 'block' : 'none';
             document.getElementById('next-button').style.display = currentStep < 2 ? 'block' : 'none';
             document.getElementById('issue-button').style.display = currentStep === 2 ? 'block' : 'none';
+            document.getElementById('done-button').style.display = currentStep === 3 ? 'block' : 'none';
         }
 
         function issueCard() {
@@ -1257,27 +1487,25 @@ client = OsAifuClient(api_key="osaifu_live_demo_rZQRk8jK9n2P3qV7wX4mT5yU6iE8oL1s
             const currency = document.querySelector('input[name="currency"]:checked').value;
             const monthlyLimit = document.getElementById('monthly-limit-input').value;
             
-            // Generate API key
-            const apiKey = generateApiKey();
+            // Generate API key and card ID
+            generatedApiKey = generateApiKey();
+            generatedCardId = generateCardId();
+            const cardDigits = generateCardDigits();
             
-            // Update success content
+            // Update Step 3 content
             document.getElementById('success-card-name').textContent = cardName;
-            document.getElementById('success-agent-name').textContent = agentName;
             document.getElementById('success-monthly-limit').textContent = 
                 (currency === 'JPY' ? '¥' : currency === 'USD' ? '$' : 'R$') + parseInt(monthlyLimit).toLocaleString();
-            document.getElementById('generated-api-key').value = apiKey;
+            document.getElementById('success-card-digits').textContent = cardDigits;
+            document.getElementById('api-key-display').textContent = generatedApiKey;
+            document.getElementById('card-id-display').textContent = generatedCardId;
             
-            // Show success step
-            document.querySelectorAll('.step-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            document.getElementById('success-content').classList.add('active');
+            // Update Python sample code
+            updatePythonSample(generatedApiKey, generatedCardId);
             
-            // Update buttons
-            document.getElementById('back-button').style.display = 'none';
-            document.getElementById('next-button').style.display = 'none';
-            document.getElementById('issue-button').style.display = 'none';
-            document.getElementById('done-button').style.display = 'block';
+            // Move to Step 3
+            currentStep = 3;
+            showStep(3);
             
             // Add card to list (this would normally be handled by backend)
             addCardToList({
@@ -1287,17 +1515,64 @@ client = OsAifuClient(api_key="osaifu_live_demo_rZQRk8jK9n2P3qV7wX4mT5yU6iE8oL1s
                 monthlyLimit: monthlyLimit,
                 currentUsage: 0,
                 status: 'active',
-                apiKey: apiKey
+                apiKey: generatedApiKey,
+                cardId: generatedCardId,
+                cardDigits: cardDigits
             });
         }
 
         function generateApiKey() {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            let result = 'osaifu_live_demo_';
+            let result = 'sk_live_';
             for (let i = 0; i < 24; i++) {
                 result += chars.charAt(Math.floor(Math.random() * chars.length));
             }
             return result;
+        }
+
+        function generateCardId() {
+            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            let result = 'card_';
+            for (let i = 0; i < 12; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        function generateCardDigits() {
+            return Math.floor(1000 + Math.random() * 9000).toString();
+        }
+
+        function updatePythonSample(apiKey, cardId) {
+            const sampleCode = `from osaifu import OsAifuClient
+client = OsAifuClient(api_key="${apiKey}")
+
+# このカードで決済
+payment = client.pay(
+    card_id="${cardId}",
+    amount=45000,
+    merchant="Google Ads",
+    description="広告費"
+)`;
+            document.getElementById('python-sample').textContent = sampleCode;
+        }
+
+        function copyPythonSample() {
+            const code = document.getElementById('python-sample').textContent;
+            copyTextToClipboard(code);
+            
+            // Show feedback
+            const button = event.target;
+            const originalText = button.innerHTML;
+            button.innerHTML = '<span data-i18n="copy">コピー完了！</span>';
+            button.classList.add('bg-green-600');
+            button.classList.remove('bg-primary');
+            
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.classList.remove('bg-green-600');
+                button.classList.add('bg-primary');
+            }, 2000);
         }
 
         function addCardToList(cardData) {
@@ -1310,9 +1585,8 @@ client = OsAifuClient(api_key="osaifu_live_demo_rZQRk8jK9n2P3qV7wX4mT5yU6iE8oL1s
         }
 
         function copyApiKey() {
-            const apiKeyInput = document.getElementById('generated-api-key');
-            apiKeyInput.select();
-            document.execCommand('copy');
+            const apiKeyText = document.getElementById('api-key-display').textContent;
+            copyTextToClipboard(apiKeyText);
             
             // Show feedback
             const button = event.target;
